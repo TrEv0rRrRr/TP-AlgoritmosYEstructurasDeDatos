@@ -1,4 +1,0 @@
-Nombre: Valentino
-Apellido: Solis
-Correo: valentinosolischang@gmail.com
-Teléfono: 989454649
