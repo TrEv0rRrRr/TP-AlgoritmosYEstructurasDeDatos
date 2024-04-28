@@ -2,26 +2,29 @@
 #include "Cliente.h"
 #include "Habitacion.h"
 #include "ListaClientes.h"
-
+#include "Tarifas.h"
+#include "ListaTarifas.h"
 class App
 {
 private:
     ListaClientes* listaClientes;
+    ListaTarifas* listaTarifas;
 
 public:
 	App();
 	~App();
 
     void mostrarMenu() {
-        cout << "Bienvenido al sistema de gesti髇 de reservas de hotel" << endl;
+        cout << "Bienvenido al sistema de gesti贸n de reservas de hotel" << endl;
         cout << "--------------------------------------------------" << endl;
         cout << "1. Ver disponibilidad de habitaciones" << endl;
         cout << "2. Realizar una nueva reserva" << endl;
-        cout << "3. Ver informaci髇 de una reserva existente" << endl;
+        cout << "3. Ver informaci贸n de una reserva existente" << endl;
         cout << "4. Modificar una reserva" << endl;
         cout << "5. Cancelar una reserva" << endl;
         cout << "6. Ver detalles del hotel" << endl;
-        cout << "7. Salir" << endl;
+	cout << "7. Ver Tarifas" << endl;
+        cout << "8. Salir" << endl;
         cout << "--------------------------------------------------" << endl;
     }
 
@@ -32,9 +35,9 @@ public:
         cin >> nombre;
         cout << "Por favor, ingrese su apellido: ";
         cin >> apellido;
-        cout << "Por favor, ingrese su correo electr髇ico: ";
+        cout << "Por favor, ingrese su correo electr贸nico: ";
         cin >> correo;
-        cout << "Por favor, ingrese su n鷐ero de tel閒ono: ";
+        cout << "Por favor, ingrese su n煤mero de tel茅fono: ";
         cin >> telefono;
 
         Cliente nuevoCliente(nombre, apellido, correo, telefono);
@@ -50,43 +53,46 @@ public:
         do {
 
             mostrarMenu();
-            cout << "Ingrese el n鷐ero de la opci髇 que desea realizar: ";
+            cout << "Ingrese el n煤mero de la opci贸n que desea realizar: ";
             cin >> opcion;
 
             switch (opcion) {
             case 1:
-                // L骻ica para ver disponibilidad de habitaciones
-                cout << "Funci髇 para ver disponibilidad de habitaciones" << endl;
+                // L贸gica para ver disponibilidad de habitaciones
+                cout << "Funci贸n para ver disponibilidad de habitaciones" << endl;
                 break;
             case 2:
-                // L骻ica para realizar una nueva reserva
-                cout << "Funci髇 para realizar una nueva reserva" << endl;
+                // L贸gica para realizar una nueva reserva
+                cout << "Funci贸n para realizar una nueva reserva" << endl;
                 break;
             case 3:
-                // L骻ica para ver informaci髇 de una reserva existente
-                cout << "Funci髇 para ver informaci髇 de una reserva existente" << endl;
+                // L贸gica para ver informaci贸n de una reserva existente
+                cout << "Funci贸n para ver informaci贸n de una reserva existente" << endl;
                 break;
             case 4:
-                // L骻ica para modificar una reserva
-                cout << "Funci髇 para modificar una reserva" << endl;
+                // L贸gica para modificar una reserva
+                cout << "Funci贸n para modificar una reserva" << endl;
                 break;
             case 5:
-                // L骻ica para cancelar una reserva
-                cout << "Funci髇 para cancelar una reserva" << endl;
+                // L贸gica para cancelar una reserva
+                cout << "Funci贸n para cancelar una reserva" << endl;
                 break;
             case 6:
-                // L骻ica para ver detalles del hotel
-                cout << "Funci髇 para ver detalles del hotel" << endl;
+                // L贸gica para ver detalles del hotel
+                cout << "Funci贸n para ver detalles del hotel" << endl;
                 break;
             case 7:
+                cout << "Funci贸n para ver las tarifas" << endl;
+                break;
+	    case 8:
                 cout << "Saliendo del sistema..." << endl;
                 break;
             default:
-                cout << "Opci髇 no v醠ida. Por favor, ingrese un n鷐ero del 1 al 7." << endl;
+                cout << "Opci贸n no v谩lida. Por favor, ingrese un n煤mero del 1 al 8." << endl;
                 break;
             }
 
-        } while (opcion != 7);
+        } while (opcion != 8);
 
         cout << "Saliendo del sistema..." << endl;
     }
