@@ -29,5 +29,23 @@
     <ClInclude Include="Librerias.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ListaClientes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListaHabitaciones.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListaReservas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reserva.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tarifas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListaTarifas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
