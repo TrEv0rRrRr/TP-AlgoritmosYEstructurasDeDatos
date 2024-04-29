@@ -1,0 +1,30 @@
+Nombre: Valentino
+Apellido: Solis
+Correo: valentinosolischang@gmail.com
+Teléfono: 7897213
+Registrado: SI
+-----------------------------------
+Nombre: Valentino
+Apellido: Solis
+Correo: valentinosolischang@gmail.com
+Teléfono: 7812793
+Registrado: SI
+-----------------------------------
+Nombre: jaklsjhd
+Apellido: ahsiudhnbas
+Correo: qiuwhyeq
+Teléfono: nbjkfasn
+Registrado: SI
+-----------------------------------
+Nombre: Valentino
+Apellido: Solis
+Correo: valentinosolischang@gmail.com
+Teléfono: 819723
+Registrado: SI
+-----------------------------------
+Nombre: Juan
+Apellido: Perez
+Correo: jperez@hotmail.com
+Teléfono: 718273
+Registrado: SI
+-----------------------------------

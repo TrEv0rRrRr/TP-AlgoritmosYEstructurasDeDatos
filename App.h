@@ -1,9 +1,12 @@
 #pragma once
 #include "Cliente.h"
 #include "Habitacion.h"
-#include "ListaClientes.h"
 #include "Tarifas.h"
+#include "ListaClientes.h"
 #include "ListaTarifas.h"
+#include "ListaHabitaciones.h"
+#include "ListaReservas.h"
+
 class App
 {
 private:
@@ -22,9 +25,8 @@ public:
         cout << "3. Ver información de una reserva existente" << endl;
         cout << "4. Modificar una reserva" << endl;
         cout << "5. Cancelar una reserva" << endl;
-        cout << "6. Ver detalles del hotel" << endl;
-	cout << "7. Ver Tarifas" << endl;
-        cout << "8. Salir" << endl;
+	    cout << "6. Ver Tarifas" << endl;
+        cout << "7. Salir" << endl;
         cout << "--------------------------------------------------" << endl;
     }
 
@@ -58,8 +60,7 @@ public:
 
             switch (opcion) {
             case 1:
-                // Lógica para ver disponibilidad de habitaciones
-                cout << "Función para ver disponibilidad de habitaciones" << endl;
+                cout << "Habitaciones disponibles:" << endl;
                 break;
             case 2:
                 // Lógica para realizar una nueva reserva
@@ -78,26 +79,25 @@ public:
                 cout << "Función para cancelar una reserva" << endl;
                 break;
             case 6:
-                // Lógica para ver detalles del hotel
-                cout << "Función para ver detalles del hotel" << endl;
-                break;
-            case 7:
+                // Lógica para ver las tarifas
                 cout << "Función para ver las tarifas" << endl;
                 break;
-	    case 8:
+	        case 7:
                 cout << "Saliendo del sistema..." << endl;
                 break;
             default:
-                cout << "Opción no válida. Por favor, ingrese un número del 1 al 8." << endl;
+                cout << "Opción no válida. Por favor, ingrese un número del 1 al 7." << endl;
                 break;
             }
 
-        } while (opcion != 8);
+        } while (opcion != 7);
 
         cout << "Saliendo del sistema..." << endl;
     }
 };
 
+
 App::App() {}
+
 
 App::~App() {}
