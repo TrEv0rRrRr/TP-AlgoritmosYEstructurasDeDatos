@@ -303,7 +303,7 @@ public:
         Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numH);
         if (habitacion != nullptr) {
             if (habitacion->getDisponibilidad()) {
-                cout << "DEBUG: Habitacion disponible para reservar." << endl;
+                cout << "Habitacion disponible para reservar." << endl;
 
                 cout << "Ingrese la fecha de inicio (dd/mm/aaaa): ";
                 cin.ignore();
@@ -327,16 +327,17 @@ public:
                 // Actualizar disponibilidad de la habitacion
                 habitacion->setDisponibilidad(false);
 
-                cout << "Reserva realizada con exito.\n";
-                limpiarConsola();
+                cout << "Reserva realizada con exito.\n\n";
                 menuPrincipal();
             }
             else {
-                cout << "La habitacion no esta disponible para reservar.\n";
+                cout << "La habitacion no esta disponible para reservar.\n\n";
+                menuPrincipal();
             }
         }
         else {
-            cout << "La habitacion no se encontró.\n";
+            cout << "La habitacion no se encontró.\n\n";
+            menuPrincipal();
         }
     }
 
@@ -368,7 +369,6 @@ public:
                 cout << "Ingrese el numero de la nueva habitacion: ";
                 cin >> numH;
                 reserva->setNumHabitacion(numH);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
             case 2:
@@ -377,7 +377,6 @@ public:
                 cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
                 getline(cin, fechaInicio);
                 reserva->setFechaInicio(fechaInicio);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
             case 3:
@@ -386,7 +385,6 @@ public:
                 cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
                 getline(cin, fechaFinal);
                 reserva->setFechaFin(fechaFinal);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
             case 4:
@@ -406,7 +404,7 @@ public:
                 reserva->setNumHabitacion(numH);
                 reserva->setFechaInicio(fechaInicio);
                 reserva->setFechaFin(fechaFinal);
-                cout << "Reserva modificada correctamente." << endl;
+                menuPrincipal();
                 break;
             }
             case 5:
@@ -419,9 +417,12 @@ public:
                 cout << "Opcion no valida." << endl;
                 break;
             }
+            cout << "Reserva modificada correctamente.\n\n";
+            menuPrincipal();
         }
         else {
-            cout << "Reserva no encontrada." << endl;
+            cout << "Reserva no encontrada.\n\n";
+            menuPrincipal();
         }
     }
 
@@ -445,19 +446,16 @@ public:
                 habitacion->setDisponibilidad(true);
                 // Eliminar la reserva de la lista
                 listaReservas->eliminarReserva(idReserva);
-                cout << "Reserva cancelada con exito.\n";
-                limpiarConsola();
+                cout << "Reserva cancelada con exito.\n\n";
                 menuPrincipal();
             }
             else { 
-                cout << "No se encontro la habitacion asociada a la reserva.\n";
-                limpiarConsola();
+                cout << "No se encontro la habitacion asociada a la reserva.\n\n";
                 menuPrincipal();
             }
         }
         else { 
-            cout << "No se encontro ninguna reserva con el ID proporcionado.\n";
-            limpiarConsola();
+            cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
             menuPrincipal();
         }
     }
@@ -572,7 +570,7 @@ public:
         cin >> opt;
         switch (opt) {
         case 1: // HABITACIONES DISPONIBLES - HECHA
-            ordenarHabitaciones(listaH);
+            //ordenarHabitaciones(listaH);
             system("cls");
             mostrarHabitacionesPaginado(listaH, 10);
             break;
