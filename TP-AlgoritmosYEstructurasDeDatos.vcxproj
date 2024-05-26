@@ -121,9 +121,7 @@
     <ClInclude Include="ListaClientes.h" />
     <ClInclude Include="ListaHabitaciones.h" />
     <ClInclude Include="ListaReservas.h" />
-    <ClInclude Include="ListaTarifas.h" />
     <ClInclude Include="Reserva.h" />
-    <ClInclude Include="Tarifas.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,39 +1,25 @@
 #pragma once
-template<typename T1, typename T2>
-
+#include "Librerias.h"
 class Habitacion
 {
 private:
-	T1 numHab;
+	int numHab, numPiso;
 	bool disponible;
-	T2 tipo;
+	string tipo;
 
 public:
-	Habitacion(T1 numPiso, T1 numHab, T2 tipo, bool disponible);
+	Habitacion() : numHab(0), numPiso(0), tipo(""), disponible(false) {}
 	~Habitacion();
 
-	void verDisponibilidad();
+	bool getDisponibilidad() const { return this->disponible; }
+	int getNumPiso() const { return this->numPiso; } 
+	int getNumHab() const { return this->numHab; }
+	string getTipo() const { return this->tipo; }
 
-	bool getDisponibilidad() { return this->disponible; }
-	T1 getNumPiso() { return this->numpPiso; } T1 getNumHab() { return this->numHab; }
-	T2 getTipo() { return this->tipo; }
-
-	void getDisponibilidad(bool disponible) { this->disponible = disponible; }
-	void getNumPiso(T1 numPiso) { this->numpPiso = numpPiso; }
-	void getNumHab(T1 numHab) { this->numHab = numHab; }
-	void getTipo(T2 tipo) { this->tipo = tipo; }
+	void setDisponibilidad(bool disponible) { this->disponible = disponible; }
+	void setNumPiso(int numPiso) { this->numPiso = numPiso; }
+	void setNumHab(int numHab) { this->numHab = numHab; }
+	void setTipo(string tipo) { this->tipo = tipo; }
 };
 
-template<typename T1, typename T2>
-Habitacion<T1, T2>::Habitacion(T1 numPiso, T1 numHab, T2 tipo, bool disponible) {
-	this->tipo = tipo;
-	this->disponible = disponible;
-}
-
-template<typename T1, typename T2>
-Habitacion<T1, T2>::~Habitacion() {}
-
-template<typename T1, typename T2>
-void Habitacion<T1, T2>::verDisponibilidad(){
-	cout << "Número de Piso: " << numPiso << " - Número de Habitación : " << numHab << " - Tipo : " << tipo << " - Disponible : " << (disponible ? "Sí" : "No") << endl;
-}
+Habitacion::~Habitacion() {}

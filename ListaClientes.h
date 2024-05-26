@@ -1,97 +1,127 @@
 #pragma once
 #include "Cliente.h"
 
+typedef unsigned int uint;
+template<typename T, T NADA = 0>
 class ListaClientes
 {
 private:
-    struct Nodo {
-        Cliente* dataCliente;
-        Nodo* next;
-
-        Nodo(Cliente* cliente, Nodo* next = nullptr) {
-            this->dataCliente = cliente;
-            this->next = next;
-        }
-    };
-
-    Nodo* start;
-    int length;
+    struct Nodo;
+    uint longitud;
+    Nodo* ini;
 
 public:
-    ListaClientes();
+    ListaClientes() : ini(nullptr), longitud(0) {}
 	~ListaClientes();
 
-    bool isEmpty() const {
-        return length == 0;
-    }
-
-    void agregarCliente(Cliente* cliente) {
-        Nodo* nuevoNodo = new Nodo(cliente);
-        if (nuevoNodo != nullptr) {
-            nuevoNodo->next = start;
-            start = nuevoNodo;
-            length++;
-        }
-    }
-
-    void eliminarCliente(string nombre) {
-        if (isEmpty()) {
-            cout << "La lista de clientes está vacía." << endl;
-            return;
-        }
-
-        Nodo* current = start;
-        Nodo* prev = nullptr;
-
-        // Buscar el cliente por su nombre
-        while (current != nullptr && current->dataCliente->getNombre() != nombre) {
-            prev = current;
-            current = current->next;
-        }
-
-        // Si encontramos al cliente, lo eliminamos
-        if (current != nullptr) {
-            // Si el cliente es el primero en la lista
-            if (prev == nullptr) {
-                start = current->next;
-            }
-            else {
-                prev->next = current->next;
-            }
-            delete current->dataCliente;
-            delete current;
-            length--;
-            cout << "Cliente " << nombre << " eliminado correctamente." << endl;
-        }
-        else {
-            cout << "Cliente " << nombre << " no encontrado en la lista." << endl;
-        }
-    }
-
-    void addClienteStart(Cliente* cliente) {
-        Nodo* newNodo = new Nodo(cliente, start);
-        if (newNodo != nullptr) {
-            start = newNodo;
-            length++;
-        }
-    }
-
-    void addClienteEnd(Cliente* cliente) {
-        if (length == 0) addClienteStart(cliente);
-        else {
-            Nodo* aux = start;
-            while (aux->next != nullptr) {
-                aux = aux->next;
-            }
-            aux->next = new Nodo(cliente);
-            length++;
-        }
-    }
+    uint getLongitud();
+    bool isEmpty();
+    void agregarCliente(T elem);
+    T buscarCliente(string nombre);
+    void eliminarCliente(string nombre);
+    T obtenerPos(uint pos);
+    void agregarEnPosicion(T elem, uint pos);
+    void agregaClienteAlFinal(T elem);
 };
 
-ListaClientes::ListaClientes() {
-    this->start = nullptr;
-    this->length = 0;
+template <typename T, T NADA>
+struct ListaClientes<T, NADA>::Nodo {
+    T elem;
+    Nodo* sig;
+    Nodo(T elem = NADA, Nodo* sig = nullptr) : elem(elem), sig(sig) {}
+};
+
+template <typename T, T NADA>
+ListaClientes<T, NADA>::~ListaClientes() {
+    Nodo* aux = ini;
+    while (aux != nullptr) {
+        aux = ini;
+        ini = ini->sig;
+        delete aux;
+    }
 }
 
-ListaClientes::~ListaClientes() {}
+template <typename T, T NADA>
+uint ListaClientes<T, NADA>::getLongitud() { return longitud; }
+
+template <typename T, T NADA>
+bool ListaClientes<T, NADA>::isEmpty() { return longitud == 0; }
+
+template <typename T, T NADA>
+void ListaClientes<T, NADA>::agregarCliente(T elem) {
+    Nodo* nuevoNodo = new Nodo(elem, ini);
+    if (nuevoNodo != nullptr) {
+        ini = nuevoNodo;
+        longitud++;
+    }
+}
+
+template <typename T, T NADA>
+T ListaClientes<T, NADA>::buscarCliente(string nombre) {
+    Nodo* aux = ini;
+    while (aux != nullptr) {
+        if (aux->elem->getNombre() == nombre) {
+            return aux->elem;
+        }
+        aux = aux->sig;
+    }
+    return nullptr;
+}
+
+template <typename T, T NADA>
+void ListaClientes<T, NADA>::eliminarCliente(string nombre) {
+    Nodo* actual = ini;
+    Nodo* anterior = nullptr;
+
+    while (actual != nullptr) {
+        if (actual->elem->getNombre() == nombre) {
+            if (anterior != nullptr) {
+                anterior->sig = actual->sig;
+            }
+            else {
+                ini = actual->sig;
+            }
+            delete actual;
+            longitud--;
+            return;
+        }
+        anterior = actual;
+        actual = actual->sig;
+    }
+}
+
+template <typename T, T NADA>
+T ListaClientes<T, NADA>::obtenerPos(uint pos) {
+    if (pos >= 0 && pos < longitud) {
+        Nodo* aux = ini;
+        for (int i = 0; i < pos; i++) {
+            aux = aux->sig;
+        }
+        return aux->elem;
+    }
+    else {
+        return NADA;
+    }
+}
+
+template <typename T, T NADA>
+void ListaClientes<T, NADA>::agregarEnPosicion(T elem, uint pos) {
+    if (pos > longitud) return;
+    if (pos == 0) {
+        agregarCliente(elem);
+    }
+    else {
+        Nodo* aux = ini;
+        for (int i = 1; i < pos; i++) {
+            aux = aux->sig;
+        }
+        Nodo* nuevo = new Nodo(elem, aux->sig);
+        if (nuevo != nullptr) {
+            aux->sig = nuevo;
+            longitud++;
+        }
+    }
+}
+
+template <typename T, T NADA>
+void ListaClientes<T, NADA>::agregaClienteAlFinal(T elem) { agregarEnPosicion(elem, longitud); }

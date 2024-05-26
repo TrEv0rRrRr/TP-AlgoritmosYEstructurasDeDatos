@@ -41,10 +41,7 @@
     <ClInclude Include="Reserva.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tarifas.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ListaTarifas.h">
+    <ClInclude Include="App.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

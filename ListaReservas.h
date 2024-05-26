@@ -1,88 +1,125 @@
 #pragma once
 #include "Reserva.h"
-
-template<typename T1, typename T2>
+typedef unsigned int uint;
+template<typename T, T NADA = 0>
 class ListaReservas {
 private:
-    struct Nodo {
-        Reserva<T1, T2>* dataReserva;
-        Nodo* next;
-
-        Nodo(Reserva<T1, T2>* reserva, Nodo* next = nullptr) {
-            this->dataReserva = reserva;
-            this->next = next;
-        }
-    };
-
-    Nodo* start;
-    int length;
+    struct Nodo;
+    uint longitud;
+    Nodo* ini;
 
 public:
-    ListaReservas() : start(nullptr), length(0) {}
-    ~ListaReservas() {
-        while (start != nullptr) {
-            Nodo* temp = start;
-            start = start->next;
-            delete temp->dataReserva;
-            delete temp;
-        }
+    ListaReservas() : ini(nullptr), longitud(0) {}
+    ~ListaReservas();
+
+    uint getLongitud();
+    bool isEmpty();
+    void agregarReserva(T elem);
+    T buscarReserva(int idReserva);
+    void eliminarReserva(int idReserva);
+    T obtenerPos(uint pos);
+    void agregarEnPosicion(T elem, uint pos);
+    void agregaReservaAlFinal(T elem);
+};
+
+template <typename T, T NADA>
+struct ListaReservas<T, NADA>::Nodo {
+    T elem;
+    Nodo* sig;
+    Nodo(T elem = NADA, Nodo* sig = nullptr) : elem(elem), sig(sig) {}
+};
+
+template <typename T, T NADA>
+ListaReservas<T, NADA>::~ListaReservas() {
+    Nodo* aux = ini;
+    while (aux != nullptr) {
+        aux = ini;
+        ini = ini->sig;
+        delete aux;
     }
+}
 
-    bool isEmpty() const {
-        return length == 0;
+template <typename T, T NADA>
+uint ListaReservas<T, NADA>::getLongitud() { return longitud; }
+
+template <typename T, T NADA>
+bool ListaReservas<T, NADA>::isEmpty() { return longitud == 0; }
+
+template <typename T, T NADA>
+void ListaReservas<T, NADA>::agregarReserva(T elem) {
+    Nodo* nuevoNodo = new Nodo(elem, ini);
+    if (nuevoNodo != nullptr) {
+        ini = nuevoNodo;
+        longitud++;
     }
+}
 
-    void agregarReserva(Reserva<T1, T2>* reserva) {
-        Nodo* nuevoNodo = new Nodo(reserva);
-        if (nuevoNodo != nullptr) {
-            nuevoNodo->next = start;
-            start = nuevoNodo;
-            length++;
+template <typename T, T NADA>
+T ListaReservas<T, NADA>::buscarReserva(int idReserva) {
+    Nodo* aux = ini;
+    while (aux != nullptr) {
+        if (aux->elem->getId() == idReserva) {
+            return aux->elem;
         }
+        aux = aux->sig;
     }
+    return nullptr;
+}
 
-    bool buscarReserva(int idReserva) const {
-        Nodo* actual = start;
-        while (actual != nullptr) {
-            if (actual->dataReserva->getId() == idReserva) {
-                return true;
-            }
-            actual = actual->next;
-        }
-        return false;
-    }
+template <typename T, T NADA>
+void ListaReservas<T, NADA>::eliminarReserva(int idReserva) {
+    Nodo* actual = ini;
+    Nodo* anterior = nullptr;
 
-    void eliminarReserva(int idReserva) {
-        if (isEmpty()) {
-            cout << "La lista de reservas está vacía." << endl;
-            return;
-        }
-
-        Nodo* current = start;
-        Nodo* prev = nullptr;
-
-        // Buscar la reserva por su ID
-        while (current != nullptr && current->dataReserva->getId() != idReserva) {
-            prev = current;
-            current = current->next;
-        }
-
-        // Si encontramos la reserva, la eliminamos
-        if (current != nullptr) {
-            // Si la reserva es la primera en la lista
-            if (prev == nullptr) {
-                start = current->next;
+    while (actual != nullptr) {
+        if (actual->elem->getId() == idReserva) {
+            if (anterior != nullptr) {
+                anterior->sig = actual->sig;
             }
             else {
-                prev->next = current->next;
+                ini = actual->sig;
             }
-            delete current->dataReserva;
-            delete current;
-            length--;
-            cout << "Reserva " << idReserva << " eliminada correctamente." << endl;
+            delete actual;
+            longitud--;
+            return;
         }
-        else {
-            cout << "Reserva " << idReserva << " no encontrada en la lista." << endl;
+        anterior = actual;
+        actual = actual->sig;
+    }
+}
+
+template <typename T, T NADA>
+T ListaReservas<T, NADA>::obtenerPos(uint pos) {
+    if (pos >= 0 && pos < longitud) {
+        Nodo* aux = ini;
+        for (int i = 0; i < pos; i++) {
+            aux = aux->sig;
+        }
+        return aux->elem;
+    }
+    else {
+        return NADA;
+    }
+}
+
+template <typename T, T NADA>
+void ListaReservas<T, NADA>::agregarEnPosicion(T elem, uint pos) {
+    if (pos > longitud) return;
+    if (pos == 0) {
+        agregarReserva(elem);
+    }
+    else {
+        Nodo* aux = ini;
+        for (int i = 1; i < pos; i++) {
+            aux = aux->sig;
+        }
+        Nodo* nuevo = new Nodo(elem, aux->sig);
+        if (nuevo != nullptr) {
+            aux->sig = nuevo;
+            longitud++;
         }
     }
-};
+}
+
+template <typename T, T NADA>
+void ListaReservas<T, NADA>::agregaReservaAlFinal(T elem) { agregarEnPosicion(elem, longitud); }
