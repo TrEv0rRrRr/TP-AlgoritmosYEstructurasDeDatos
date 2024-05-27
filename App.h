@@ -170,27 +170,20 @@ public:
     }
 
     void crearHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
-        // Cantidad de pisos y habitaciones por piso
         const int NUM_PISOS = 2;
         const int HABITACIONES_POR_PISO = 10;
 
-        // Tipos de habitaciones
         string tipos[] = { "Individual", "Doble", "Suite" };
 
-        // Iteramos sobre los pisos y las habitaciones por piso
         for (int piso = 1; piso <= NUM_PISOS; ++piso) {
             int numHabInicio = (piso == 1) ? 101 : 201;
 
             for (int numHab = numHabInicio; numHab < numHabInicio + HABITACIONES_POR_PISO; ++numHab) {
-                // Creamos una nueva habitacion
                 Habitacion* habitacion = new Habitacion();
                 habitacion->setNumPiso(piso);
                 habitacion->setNumHab(numHab);
                 habitacion->setDisponibilidad(true);
-                // Asignamos un tipo aleatorio
                 habitacion->setTipo(tipos[rand() % (sizeof(tipos) / sizeof(tipos[0]))]);
-
-                // Agregamos la habitacion a la lista
                 lista->agregarHabitacion(habitacion);
             }
         }
@@ -281,7 +274,6 @@ public:
 
                 listaReservas->agregarReserva(reserva);
 
-                // Actualizar disponibilidad de la habitacion
                 habitacion->setDisponibilidad(false);
 
                 cout << "Reserva realizada con exito.\n\n";
@@ -299,7 +291,6 @@ public:
     }
 
     void modificarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
-        system("cls");
         int idReserva;
         cout << "Ingrese el ID de la reserva: ";
         cin >> idReserva;
@@ -420,24 +411,18 @@ public:
     }
 
     void cancelarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
-        system("cls");
-
         int idReserva;
         cout << "Ingrese el ID de la reserva que desea cancelar: ";
         cin >> idReserva;
 
-        // Buscar la reserva por su ID
         Reserva* reserva = listaReservas->buscarReserva(idReserva);
 
         if (reserva != nullptr) {
-            // Obtener el numero de habitacion reservada
             int numHabitacion = reserva->getNumHabitacion();
 
-            // Actualizar la disponibilidad de la habitacion reservada
             Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numHabitacion);
             if (habitacion != nullptr) {
                 habitacion->setDisponibilidad(true);
-                // Eliminar la reserva de la lista
                 listaReservas->eliminarReserva(idReserva);
                 cout << "Reserva cancelada con exito.\n\n";
                 menuPrincipal();
@@ -527,8 +512,7 @@ public:
         cout << "3. Ver reservas" << endl;
         cout << "4. Modificar una reserva" << endl;
         cout << "5. Cancelar una reserva" << endl;
-        cout << "6. Ver Tarifa" << endl;
-        cout << "7. Salir" << endl;
+        cout << "6. Salir" << endl;
         cout << "--------------------------------------------------" << endl;
         cout << "Ingrese una opcion: ";
     }
@@ -543,30 +527,21 @@ public:
         cin >> opt;
         switch (opt) {
         case 1: // HABITACIONES DISPONIBLES - HECHA
-            //ordenarHabitaciones(listaH);
-            system("cls");
             mostrarHabitaciones(listaH);
             break;
         case 2: // AGREGAR RESERVAS - HECHA
             reservarHabitacion(listaR, listaH, nombreCliente, apellidoCliente);
-            guardarDatos(listaC, listaH, listaR);
             break;
         case 3: // VER RESERVAS - HECHA
-            system("cls");
             mostrarReservas(listaR);
             break;
         case 4: // MODIFICAR RESERVA - HECHA
             modificarReserva(listaR, listaH);
-            guardarDatos(listaC, listaH, listaR);
             break;
         case 5: // ELIMINAR RESERVA - HECHA
             cancelarReserva(listaR, listaH);
-            guardarDatos(listaC, listaH, listaR);
             break;
-        case 6: // VER TARIFA
-            cout << "Funcion para ver las tarifas" << endl;
-            break;
-        case 7: // SALIR DEL PROGRAMA
+        case 6: // SALIR DEL PROGRAMA
             guardarDatos(listaC, listaH, listaR);
             exit(0);
             break;
@@ -574,8 +549,6 @@ public:
             cout << "Opcion no valida. Por favor, ingrese un numero del 1 al 7." << endl;
             break;
         }
-
-        limpiarConsola();
     }
 
     bool archivoExiste(const string& nombreArchivo) {
@@ -611,15 +584,12 @@ public:
             while (true) {
                 menuRegistro();
                 clientesRegistrados = manejarMenuRegistro(listaClientes, listaHabitaciones, listaReservas);
-                system("cls");
                 if (clientesRegistrados) break;
             }
         }
 
         // Si el archivo de habitaciones no existe, se crearan las habitaciones
-        if (!habitacionesCreadas) {
-            crearHabitaciones(listaHabitaciones);
-        }
+        if (!habitacionesCreadas) crearHabitaciones(listaHabitaciones);
 
         // Si el archivo de reservas no existe, se inicializara vacio
         if (!reservasCargadas) {
