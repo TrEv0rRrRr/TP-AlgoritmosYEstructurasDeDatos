@@ -527,12 +527,14 @@ public:
         cin >> opt;
         switch (opt) {
         case 1: // HABITACIONES DISPONIBLES - HECHA
+            system("cls");
             mostrarHabitaciones(listaH);
             break;
         case 2: // AGREGAR RESERVAS - HECHA
             reservarHabitacion(listaR, listaH, nombreCliente, apellidoCliente);
             break;
         case 3: // VER RESERVAS - HECHA
+            system("cls");
             mostrarReservas(listaR);
             break;
         case 4: // MODIFICAR RESERVA - HECHA
@@ -553,6 +555,7 @@ public:
 
     bool archivoExiste(const string& nombreArchivo) {
         ifstream archivo(nombreArchivo);
+        archivo.close();
         return archivo.good();
     }
 
@@ -565,19 +568,13 @@ public:
         cargarHabitaciones(listaHabitaciones, "habitaciones.txt");
         cargarReservas(listaReservas, "reservas.txt");
         // Verificar si el archivo de clientes existe y cargarlos si es asi
-        ifstream archivoClientes("clientes.txt");
-        bool clientesRegistrados = archivoClientes.good();
-        archivoClientes.close();
+        bool clientesRegistrados = archivoExiste("clientes.txt");
 
         // Verificar si el archivo de habitaciones existe y cargarlas si es asi
-        ifstream archivoHabitaciones("habitaciones.txt");
-        bool habitacionesCreadas = archivoHabitaciones.good();
-        archivoHabitaciones.close();
+        bool habitacionesCreadas = archivoExiste("habitaciones.txt");
 
         // Verificar si el archivo de reservas existe y cargarlas si es asi
-        ifstream archivoReservas("reservas.txt");
-        bool reservasCargadas = archivoReservas.good();
-        archivoReservas.close();
+        bool reservasCargadas = archivoExiste("reservas.txt");
 
         // Si el archivo de clientes no existe, se mostrara el menu de registro
         if (!clientesRegistrados) {
