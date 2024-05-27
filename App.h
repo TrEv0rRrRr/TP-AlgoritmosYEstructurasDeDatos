@@ -12,6 +12,7 @@ private:
     ListaClientes<Cliente*>* listaClientes = new ListaClientes<Cliente*>();
     ListaHabitaciones<Habitacion*>* listaHabitaciones = new ListaHabitaciones<Habitacion*>();
     ListaReservas<Reserva*>* listaReservas = new ListaReservas<Reserva*>();
+    bool habitacionesCargadas = false;
 
 public:
 	App();
@@ -20,16 +21,15 @@ public:
     // -------------- FUNCIONES PARA CLIENTES --------------
 
     void guardarClientes(ListaClientes<Cliente*>* lista, const string& nombreArchivo) {
-        string nombre, apellido, correo, telefono;
-
         ofstream archivo(nombreArchivo);
 
         if (archivo.is_open()) {
-            archivo.clear(); // Limpiar el archivo antes de escribir
-
             for (uint i = 0; i < lista->getLongitud(); ++i) {
                 Cliente* cliente = lista->obtenerPos(i);
-                archivo << cliente->getNombre() << "," << cliente->getApellido() << "," << cliente->getCorreo() << "," << cliente->getTelefono() << endl;
+                archivo << cliente->getNombre() << ","
+                    << cliente->getApellido() << ","
+                    << cliente->getCorreo() << ","
+                    << cliente->getTelefono() << endl;
             }
             archivo.close();
         }
@@ -61,11 +61,10 @@ public:
                 nombreRegistrado = nombre;
                 apellidoRegistrado = apellido;
             }
-
             archivo.close();
         }
         else {
-            cout << "El archivo " << nombreArchivo << " no existe. Se creara uno nuevo al guardar usuarios." << endl;
+            cout << "El archivo " << nombreArchivo << " no existe. Se creará uno nuevo al guardar usuarios." << endl;
         }
 
         return make_pair(nombreRegistrado, apellidoRegistrado);
@@ -102,11 +101,12 @@ public:
         ofstream archivo(nombreArchivo);
 
         if (archivo.is_open()) {
-            archivo.clear(); // Limpiar el archivo antes de escribir
-
             for (uint i = 0; i < lista->getLongitud(); ++i) {
                 Habitacion* habitacion = lista->obtenerPos(i);
-                archivo << habitacion->getNumPiso() << "," << habitacion->getNumHab() << "," << habitacion->getTipo() << "," << habitacion->getDisponibilidad() << endl;
+                archivo << habitacion->getNumPiso() << ","
+                    << habitacion->getNumHab() << ","
+                    << habitacion->getTipo() << ","
+                    << habitacion->getDisponibilidad() << endl;
             }
             archivo.close();
         }
@@ -116,7 +116,6 @@ public:
     }
 
     void cargarHabitaciones(ListaHabitaciones<Habitacion*>* lista, const string& nombreArchivo) {
-        bool habitacionesCargadas = false;
         if (!habitacionesCargadas) {
             ifstream archivo(nombreArchivo);
             if (archivo.is_open()) {
@@ -150,46 +149,24 @@ public:
         }
     }
 
-    void mostrarHabitacionesPaginado(ListaHabitaciones<Habitacion*>* lista, int elementosPorPagina) {
-        system("cls");
+    void imprimirHabitaciones(ListaHabitaciones<Habitacion*>* lista, uint indice) {
+        if (indice < lista->getLongitud()) {
+            Habitacion* habitacion = lista->obtenerPos(indice);
+            cout << "\t" << habitacion->getNumHab() << "\t\t" << habitacion->getNumPiso() << "\t\t\t" << habitacion->getTipo() << "\t\t\t" << (habitacion->getDisponibilidad() ? "Si" : "No") << endl;
+            cout << "________________________________________________________________________________________\n";
+            imprimirHabitaciones(lista, indice + 1);
+        }
+    }
+
+    void mostrarHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
         if (lista->isEmpty()) {
             cout << "No hay habitaciones.\n\n";
-            return;
         }
-
-        int totalPaginas = (lista->getLongitud() + elementosPorPagina - 1) / elementosPorPagina;
-        int paginaActual = 0;
-        char opcion;
-
-        do {
-            system("cls");
-            cout << "Lista de habitaciones - Pagina " << paginaActual + 1 << " de " << totalPaginas << ":\n";
+        else {
+            cout << "Lista de habitaciones:\n";
             cout << "Num. Piso\tNum. Habitacion\t\tTipo de habitacion\t\tDisponibilidad\n";
-
-            int inicio = paginaActual * elementosPorPagina;
-            int fin = min(inicio + elementosPorPagina, (int)lista->getLongitud());
-
-            for (int i = inicio; i < fin; ++i) {
-                Habitacion* habitacion = lista->obtenerPos(i);
-                cout << "\t" << habitacion->getNumHab() << "\t\t" << habitacion->getNumPiso() << "\t\t\t"
-                    << habitacion->getTipo() << "\t\t\t" << (habitacion->getDisponibilidad() ? "Si" : "No") << endl;
-                cout << "________________________________________________________________________________________\n";
-            }
-
-            cout << "n: Siguiente pagina, p: Pagina anterior, q: Salir\n";
-            cout << "Seleccione una opcion: ";
-            cin >> opcion;
-
-            if (opcion == 'n' && paginaActual < totalPaginas - 1) {
-                paginaActual++;
-            }
-            else if (opcion == 'p' && paginaActual > 0) {
-                paginaActual--;
-            }
-            else if (opcion != 'q') {
-                cout << "Opcion no valida.\n";
-            }
-        } while (opcion != 'q');
+            imprimirHabitaciones(lista, 0);
+        }
     }
 
     void crearHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
@@ -219,26 +196,6 @@ public:
         }
 
         guardarHabitaciones(lista, "habitaciones.txt");
-    }
-
-    void ordenarHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
-        bool swapped;
-        for (uint i = 0; i < lista->getLongitud() - 1; ++i) {
-            swapped = false;
-            for (uint j = 0; j < lista->getLongitud() - i - 1; ++j) {
-                Habitacion* hab1 = lista->obtenerPos(j);
-                Habitacion* hab2 = lista->obtenerPos(j + 1);
-
-                if (hab1->getNumPiso() > hab2->getNumPiso() ||
-                    (hab1->getNumPiso() == hab2->getNumPiso() && hab1->getNumHab() > hab2->getNumHab())) {
-                    swap(*lista->obtenerPos(j), *lista->obtenerPos(j + 1));
-                    swapped = true;
-                }
-            }
-            // Si no se realizo ningun intercambio, la lista esta ordenada
-            if (!swapped)
-                break;
-        }
     }
 
     // -------------- FUNCIONES PARA RESERVAS --------------
@@ -303,7 +260,7 @@ public:
         Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numH);
         if (habitacion != nullptr) {
             if (habitacion->getDisponibilidad()) {
-                cout << "DEBUG: Habitacion disponible para reservar." << endl;
+                cout << "Habitacion disponible para reservar." << endl;
 
                 cout << "Ingrese la fecha de inicio (dd/mm/aaaa): ";
                 cin.ignore();
@@ -327,102 +284,139 @@ public:
                 // Actualizar disponibilidad de la habitacion
                 habitacion->setDisponibilidad(false);
 
-                cout << "Reserva realizada con exito.\n";
-                limpiarConsola();
+                cout << "Reserva realizada con exito.\n\n";
                 menuPrincipal();
             }
             else {
-                cout << "La habitacion no esta disponible para reservar.\n";
+                cout << "La habitacion no esta disponible para reservar.\n\n";
+                menuPrincipal();
             }
         }
         else {
-            cout << "La habitacion no se encontró.\n";
+            cout << "La habitacion no se encontró.\n\n";
+            menuPrincipal();
         }
     }
 
-    void modificarReserva(ListaReservas<Reserva*>* lista) {
+    void modificarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
         system("cls");
         int idReserva;
         cout << "Ingrese el ID de la reserva: ";
         cin >> idReserva;
-
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        Reserva* reserva = lista->buscarReserva(idReserva);
+        Reserva* reserva = listaReservas->buscarReserva(idReserva);
 
         if (reserva != nullptr) {
             int opt;
-            cout << "Reserva encontrada! Que desea modificar?" << endl;
-            cout << "1: Numero de habitacion" << endl;
+            cout << "Reserva encontrada. ¿Qué desea modificar?" << endl;
+            cout << "1: Número de habitación" << endl;
             cout << "2: Fecha de inicio" << endl;
             cout << "3: Fecha de salida" << endl;
-            cout << "4: Todos los datos" << endl;
-            cout << "5: No modificar nada" << endl;
-            cout << "Ingrese una opcion: ";
+            cout << "4: Ambas fechas" << endl;
+            cout << "5: Todos los datos" << endl;
+            cout << "6: No modificar nada" << endl;
+            cout << "Ingrese una opción: ";
             cin >> opt;
 
             switch (opt) {
             case 1:
             {
                 int numH;
-                cout << "Ingrese el numero de la nueva habitacion: ";
+                cout << "Ingrese el número de la nueva habitación: ";
                 cin >> numH;
-                reserva->setNumHabitacion(numH);
-                cout << "Reserva modificada correctamente." << endl;
+
+                Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                if (habitacionActual != nullptr) {
+                    habitacionActual->setDisponibilidad(true);
+                }
+
+                Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                    nuevaHabitacion->setDisponibilidad(false);
+                    reserva->setNumHabitacion(numH);
+                    cout << "Número de habitación actualizado." << endl;
+                }
+                else {
+                    cout << "La nueva habitación no está disponible." << endl;
+                }
                 break;
             }
             case 2:
             {
                 string fechaInicio;
                 cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                cin.ignore();
                 getline(cin, fechaInicio);
                 reserva->setFechaInicio(fechaInicio);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
             case 3:
             {
                 string fechaFinal;
                 cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                cin.ignore();
                 getline(cin, fechaFinal);
                 reserva->setFechaFin(fechaFinal);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
             case 4:
             {
+                string fechaFinal, fechaInicio;
+                cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                getline(cin, fechaInicio);
+                cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                getline(cin, fechaFinal);
+
+                reserva->setFechaInicio(fechaInicio);
+                reserva->setFechaFin(fechaFinal);
+                break;
+            }
+            case 5:
+            {
                 int numH;
                 string fechaInicio, fechaFinal;
 
-                cout << "Ingrese el numero de la nueva habitacion: ";
+                cout << "Ingrese el número de la nueva habitación: ";
                 cin >> numH;
                 cin.ignore();
+                Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                if (habitacionActual != nullptr) {
+                    habitacionActual->setDisponibilidad(true);
+                }
+
+                Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                    nuevaHabitacion->setDisponibilidad(false);
+                    reserva->setNumHabitacion(numH);
+                    cout << "Número de habitación actualizado." << endl;
+                }
+                else {
+                    cout << "La nueva habitación no está disponible." << endl;
+                }
 
                 cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
                 getline(cin, fechaInicio);
                 cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
                 getline(cin, fechaFinal);
 
-                reserva->setNumHabitacion(numH);
                 reserva->setFechaInicio(fechaInicio);
                 reserva->setFechaFin(fechaFinal);
-                cout << "Reserva modificada correctamente." << endl;
                 break;
             }
-            case 5:
-            {   
-                limpiarConsola();
+            case 6:
+                system("cls");
                 menuPrincipal();
-                break;
-            }
+                return;
             default:
-                cout << "Opcion no valida." << endl;
+                cout << "Opción no válida." << endl;
                 break;
             }
+
+            guardarReservas(listaReservas, "reservas.txt");
+            guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
+
+            cout << "Reserva modificada correctamente." << endl;
         }
-        else {
-            cout << "Reserva no encontrada." << endl;
-        }
+        else cout << "Reserva no encontrada." << endl;
     }
 
     void cancelarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
@@ -445,65 +439,42 @@ public:
                 habitacion->setDisponibilidad(true);
                 // Eliminar la reserva de la lista
                 listaReservas->eliminarReserva(idReserva);
-                cout << "Reserva cancelada con exito.\n";
-                limpiarConsola();
+                cout << "Reserva cancelada con exito.\n\n";
                 menuPrincipal();
             }
             else { 
-                cout << "No se encontro la habitacion asociada a la reserva.\n";
-                limpiarConsola();
+                cout << "No se encontro la habitacion asociada a la reserva.\n\n";
                 menuPrincipal();
             }
         }
         else { 
-            cout << "No se encontro ninguna reserva con el ID proporcionado.\n";
-            limpiarConsola();
+            cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
             menuPrincipal();
         }
     }
 
-    void mostrarReservasPaginado(ListaReservas<Reserva*>* listaReservas, int elementosPorPagina) {
+    void imprimirReservas(ListaReservas<Reserva*>* lista, uint indice) {
+        if (indice < lista->getLongitud()) {
+            Reserva* reserva = lista->obtenerPos(indice);
+            cout << reserva->getId() << "\t"
+                << reserva->getNombreCliente() << ", " << reserva->getApellidoCliente() << "\t"
+                << reserva->getNumHabitacion() << "\t\t"
+                << reserva->getFechaInicio() << " - " << reserva->getFechaFin() << endl;
+            cout << "_______________________________________________________________________________\n";
+            imprimirReservas(lista, indice + 1);
+        }
+    }
+
+    void mostrarReservas(ListaReservas<Reserva*>* listaReservas) {
         system("cls");
         if (listaReservas->isEmpty()) {
             cout << "No hay reservas.\n\n";
-            return;
         }
-
-        int totalPaginas = (listaReservas->getLongitud() + elementosPorPagina - 1) / elementosPorPagina;
-        int paginaActual = 0;
-        char opcion;
-
-        do {
-            system("cls");
-            cout << "Lista de reservas - Pagina " << paginaActual + 1 << " de " << totalPaginas << ":\n";
+        else {
+            cout << "Lista de reservas:\n";
             cout << "ID\tCliente\t\tHabitacion\tFechas de reserva\n";
-
-            int inicio = paginaActual * elementosPorPagina;
-            int fin = min(inicio + elementosPorPagina, (int)listaReservas->getLongitud());
-
-            for (int i = inicio; i < fin; ++i) {
-                Reserva* reserva = listaReservas->obtenerPos(i);
-                cout << reserva->getId() << "\t"
-                    << reserva->getNombreCliente() << ", " << reserva->getApellidoCliente() << "\t"
-                    << reserva->getNumHabitacion() << "\t\t"
-                    << reserva->getFechaInicio() << " - " << reserva->getFechaFin() << endl;
-                cout << "_______________________________________________________________________________\n";
-            }
-
-            cout << "n: Siguiente pagina, p: Pagina anterior, q: Salir\n";
-            cout << "Seleccione una opcion: ";
-            cin >> opcion;
-
-            if (opcion == 'n' && paginaActual < totalPaginas - 1) {
-                paginaActual++;
-            }
-            else if (opcion == 'p' && paginaActual > 0) {
-                paginaActual--;
-            }
-            else if (opcion != 'q') {
-                cout << "Opcion no valida.\n";
-            }
-        } while (opcion != 'q');
+            imprimirReservas(listaReservas, 0);
+        }
     }
 
     // -------------- FUNCIONES PRINCIPALES --------------
@@ -572,9 +543,9 @@ public:
         cin >> opt;
         switch (opt) {
         case 1: // HABITACIONES DISPONIBLES - HECHA
-            ordenarHabitaciones(listaH);
+            //ordenarHabitaciones(listaH);
             system("cls");
-            mostrarHabitacionesPaginado(listaH, 10);
+            mostrarHabitaciones(listaH);
             break;
         case 2: // AGREGAR RESERVAS - HECHA
             reservarHabitacion(listaR, listaH, nombreCliente, apellidoCliente);
@@ -582,10 +553,10 @@ public:
             break;
         case 3: // VER RESERVAS - HECHA
             system("cls");
-            mostrarReservasPaginado(listaR, 10);
+            mostrarReservas(listaR);
             break;
         case 4: // MODIFICAR RESERVA - HECHA
-            modificarReserva(listaR);
+            modificarReserva(listaR, listaH);
             guardarDatos(listaC, listaH, listaR);
             break;
         case 5: // ELIMINAR RESERVA - HECHA
