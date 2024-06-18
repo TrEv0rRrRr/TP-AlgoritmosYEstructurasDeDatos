@@ -20,6 +20,7 @@ public:
     T obtenerPos(uint pos);
     void agregarEnPosicion(T elem, uint pos);
     void agregaReservaAlFinal(T elem);
+    void vaciar();
 };
 
 template <typename T, T NADA>
@@ -123,3 +124,14 @@ void ListaReservas<T, NADA>::agregarEnPosicion(T elem, uint pos) {
 
 template <typename T, T NADA>
 void ListaReservas<T, NADA>::agregaReservaAlFinal(T elem) { agregarEnPosicion(elem, longitud); }
+
+template<typename T, T NADA>
+void ListaReservas<T, NADA>::vaciar() {
+    Nodo* aux;
+    while (ini != nullptr) {
+        aux = ini;
+        ini = ini->sig;
+        delete aux;
+    }
+    longitud = 0;
+}

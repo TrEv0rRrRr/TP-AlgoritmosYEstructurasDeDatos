@@ -19,6 +19,7 @@ public:
     T buscarHabitacion(int numHabitacion);
     void eliminarHabitacion(int numHabitacion);
     T obtenerPos(uint pos);
+    void intercambiar(uint pos1, uint pos2);
 };
 
 template <typename T, T NADA>
@@ -100,3 +101,24 @@ T ListaHabitaciones<T, NADA>::obtenerPos(uint pos) {
         return NADA;
     }
 }
+
+template<typename T, T NADA>
+void ListaHabitaciones<T, NADA>::intercambiar(uint pos1, uint pos2) {
+    if (pos1 >= longitud || pos2 >= longitud) {
+        return; // Posiciones fuera de rango
+    }
+
+    Nodo* nodo1 = ini;
+    Nodo* nodo2 = ini;
+    for (uint i = 0; i < pos1; ++i) {
+        nodo1 = nodo1->sig;
+    }
+    for (uint i = 0; i < pos2; ++i) {
+        nodo2 = nodo2->sig;
+    }
+
+    T temp = nodo1->elem;
+    nodo1->elem = nodo2->elem;
+    nodo2->elem = temp;
+}
+

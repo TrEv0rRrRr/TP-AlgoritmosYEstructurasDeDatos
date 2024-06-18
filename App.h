@@ -64,7 +64,7 @@ public:
             archivo.close();
         }
         else {
-            cout << "El archivo " << nombreArchivo << " no existe. Se creará uno nuevo al guardar usuarios." << endl;
+            cout << "El archivo " << nombreArchivo << " no existe. Se creara uno nuevo al guardar usuarios." << endl;
         }
 
         return make_pair(nombreRegistrado, apellidoRegistrado);
@@ -124,18 +124,18 @@ public:
                     stringstream ss(linea);
                     string numHab, numPiso, tipo;
                     int disponible;
-                    getline(ss, numHab, ',');
                     getline(ss, numPiso, ',');
+                    getline(ss, numHab, ',');
                     getline(ss, tipo, ',');
                     ss >> disponible;
 
-                    int numHabInt = stoi(numHab);
                     int numPisoInt = stoi(numPiso);
+                    int numHabInt = stoi(numHab);
                     bool disponibilidad = (disponible == 1);
 
                     Habitacion* habitacion = new Habitacion();
-                    habitacion->setNumHab(numHabInt);
                     habitacion->setNumPiso(numPisoInt);
+                    habitacion->setNumHab(numHabInt);
                     habitacion->setTipo(tipo);
                     habitacion->setDisponibilidad(disponibilidad);
                     lista->agregarHabitacion(habitacion);
@@ -152,7 +152,7 @@ public:
     void imprimirHabitaciones(ListaHabitaciones<Habitacion*>* lista, uint indice) {
         if (indice < lista->getLongitud()) {
             Habitacion* habitacion = lista->obtenerPos(indice);
-            cout << "\t" << habitacion->getNumHab() << "\t\t" << habitacion->getNumPiso() << "\t\t\t" << habitacion->getTipo() << "\t\t\t" << (habitacion->getDisponibilidad() ? "Si" : "No") << endl;
+            cout << "\t" << habitacion->getNumPiso() << "\t\t" << habitacion->getNumHab() << "\t\t\t" << habitacion->getTipo() << "\t\t\t" << (habitacion->getDisponibilidad() ? "Si" : "No") << endl;
             cout << "________________________________________________________________________________________\n";
             imprimirHabitaciones(lista, indice + 1);
         }
@@ -189,6 +189,37 @@ public:
         }
 
         guardarHabitaciones(lista, "habitaciones.txt");
+    }
+
+                     // -------------- ORDENAMIENTO PARA HABITACIONES --------------
+
+    void quicksort(ListaHabitaciones<Habitacion*>* lista, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partition(lista, low, high);
+            quicksort(lista, low, pivotIndex - 1);
+            quicksort(lista, pivotIndex + 1, high);
+        }
+    }
+
+    int partition(ListaHabitaciones<Habitacion*>* lista, int low, int high) {
+        Habitacion* pivot = lista->obtenerPos(high);
+        int i = low - 1;
+
+        for (int j = low; j < high; ++j) {
+            if (lista->obtenerPos(j)->getNumHab() < pivot->getNumHab()) {
+                ++i;
+                lista->intercambiar(i, j);
+            }
+        }
+        lista->intercambiar(i + 1, high);
+        return i + 1;
+    }
+
+    void ordenarHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
+        int longitud = lista->getLongitud();
+        if (longitud > 1) {
+            quicksort(lista, 0, longitud - 1);
+        }
     }
 
     // -------------- FUNCIONES PARA RESERVAS --------------
@@ -285,7 +316,7 @@ public:
             }
         }
         else {
-            cout << "La habitacion no se encontró.\n\n";
+            cout << "La habitacion no se encontro.\n\n";
             menuPrincipal();
         }
     }
@@ -298,21 +329,21 @@ public:
 
         if (reserva != nullptr) {
             int opt;
-            cout << "Reserva encontrada. ¿Qué desea modificar?" << endl;
-            cout << "1: Número de habitación" << endl;
+            cout << "Reserva encontrada! Que desea modificar?" << endl;
+            cout << "1: Numero de habitacion" << endl;
             cout << "2: Fecha de inicio" << endl;
             cout << "3: Fecha de salida" << endl;
             cout << "4: Ambas fechas" << endl;
             cout << "5: Todos los datos" << endl;
             cout << "6: No modificar nada" << endl;
-            cout << "Ingrese una opción: ";
+            cout << "Ingrese una opcion: ";
             cin >> opt;
 
             switch (opt) {
             case 1:
             {
                 int numH;
-                cout << "Ingrese el número de la nueva habitación: ";
+                cout << "Ingrese el numero de la nueva habitacion: ";
                 cin >> numH;
 
                 Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
@@ -324,10 +355,10 @@ public:
                 if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
                     nuevaHabitacion->setDisponibilidad(false);
                     reserva->setNumHabitacion(numH);
-                    cout << "Número de habitación actualizado." << endl;
+                    cout << "Numero de habitacion actualizado." << endl;
                 }
                 else {
-                    cout << "La nueva habitación no está disponible." << endl;
+                    cout << "La nueva habitacion no esta disponible." << endl;
                 }
                 break;
             }
@@ -366,7 +397,7 @@ public:
                 int numH;
                 string fechaInicio, fechaFinal;
 
-                cout << "Ingrese el número de la nueva habitación: ";
+                cout << "Ingrese el numero de la nueva habitacion: ";
                 cin >> numH;
                 cin.ignore();
                 Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
@@ -378,10 +409,10 @@ public:
                 if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
                     nuevaHabitacion->setDisponibilidad(false);
                     reserva->setNumHabitacion(numH);
-                    cout << "Número de habitación actualizado." << endl;
+                    cout << "Numero de habitacion actualizado." << endl;
                 }
                 else {
-                    cout << "La nueva habitación no está disponible." << endl;
+                    cout << "La nueva habitacion no esta disponible." << endl;
                 }
 
                 cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
@@ -394,11 +425,9 @@ public:
                 break;
             }
             case 6:
-                system("cls");
-                menuPrincipal();
                 return;
             default:
-                cout << "Opción no válida." << endl;
+                cout << "Opcion no valida." << endl;
                 break;
             }
 
@@ -425,24 +454,17 @@ public:
                 habitacion->setDisponibilidad(true);
                 listaReservas->eliminarReserva(idReserva);
                 cout << "Reserva cancelada con exito.\n\n";
-                menuPrincipal();
             }
-            else { 
-                cout << "No se encontro la habitacion asociada a la reserva.\n\n";
-                menuPrincipal();
-            }
+            else cout << "No se encontro la habitacion asociada a la reserva.\n\n";
         }
-        else { 
-            cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
-            menuPrincipal();
-        }
+        else cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
     }
 
     void imprimirReservas(ListaReservas<Reserva*>* lista, uint indice) {
         if (indice < lista->getLongitud()) {
             Reserva* reserva = lista->obtenerPos(indice);
             cout << reserva->getId() << "\t"
-                << reserva->getNombreCliente() << ", " << reserva->getApellidoCliente() << "\t"
+                << reserva->getApellidoCliente() << ", " << reserva->getNombreCliente() << "\t"
                 << reserva->getNumHabitacion() << "\t\t"
                 << reserva->getFechaInicio() << " - " << reserva->getFechaFin() << endl;
             cout << "_______________________________________________________________________________\n";
@@ -528,20 +550,33 @@ public:
         switch (opt) {
         case 1: // HABITACIONES DISPONIBLES - HECHA
             system("cls");
+            ordenarHabitaciones(listaH);
             mostrarHabitaciones(listaH);
+            limpiarConsola();
             break;
         case 2: // AGREGAR RESERVAS - HECHA
+            system("cls");
             reservarHabitacion(listaR, listaH, nombreCliente, apellidoCliente);
+            limpiarConsola();
             break;
         case 3: // VER RESERVAS - HECHA
             system("cls");
             mostrarReservas(listaR);
+            limpiarConsola();
             break;
         case 4: // MODIFICAR RESERVA - HECHA
+            system("cls");
+            mostrarReservas(listaR);
+            cout << "\n\n";
             modificarReserva(listaR, listaH);
+            limpiarConsola();
             break;
         case 5: // ELIMINAR RESERVA - HECHA
+            system("cls");
+            mostrarReservas(listaR);
+            cout << "\n\n";
             cancelarReserva(listaR, listaH);
+            limpiarConsola();
             break;
         case 6: // SALIR DEL PROGRAMA
             guardarDatos(listaC, listaH, listaR);
