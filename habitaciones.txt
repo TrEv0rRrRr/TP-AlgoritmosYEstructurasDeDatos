@@ -1,5 +1,5 @@
-1,101,Suite,0
-1,102,Suite,1
+1,101,Suite,1
+1,102,Suite,0
 1,103,Doble,1
 1,104,Doble,1
 1,105,Suite,1
@@ -8,7 +8,7 @@
 1,108,Individual,1
 1,109,Doble,1
 1,110,Suite,1
-2,201,Suite,0
+2,201,Suite,1
 2,202,Suite,1
 2,203,Doble,1
 2,204,Individual,1
