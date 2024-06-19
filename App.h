@@ -15,8 +15,8 @@ private:
     bool habitacionesCargadas = false;
 
 public:
-	App();
-	~App();
+    App();
+    ~App();
 
     // -------------- FUNCIONES PARA CLIENTES --------------
 
@@ -191,7 +191,7 @@ public:
         guardarHabitaciones(lista, "habitaciones.txt");
     }
 
-                     // -------------- ORDENAMIENTO PARA HABITACIONES --------------
+    // -------------- ORDENAMIENTO PARA HABITACIONES --------------
 
     void quicksort(ListaHabitaciones<Habitacion*>* lista, int low, int high) {
         if (low < high) {
@@ -275,7 +275,6 @@ public:
     }
 
     void reservarHabitacion(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones, string& nombreCliente, string& apellidoCliente) {
-        system("cls");
         string fInicio, fFinal;
         int numH;
         cout << "Ingrese el numero de habitacion que quiere reservar: ";
@@ -315,146 +314,151 @@ public:
     }
 
     void modificarReserva(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
-        int idReserva;
-        cout << "Ingrese el ID de la reserva: ";
-        cin >> idReserva;
-        Reserva* reserva = colaReservas->buscarReserva(idReserva);
+        if (colaReservas->estaVacia()) return;
+        else {
+            int idReserva;
+            cout << "Ingrese el ID de la reserva: ";
+            cin >> idReserva;
+            Reserva* reserva = colaReservas->buscarReserva(idReserva);
 
-        if (reserva != nullptr) {
-            int opt;
-            cout << "Reserva encontrada! Que desea modificar?" << endl;
-            cout << "1: Numero de habitacion" << endl;
-            cout << "2: Fecha de inicio" << endl;
-            cout << "3: Fecha de salida" << endl;
-            cout << "4: Ambas fechas" << endl;
-            cout << "5: Todos los datos" << endl;
-            cout << "6: No modificar nada" << endl;
-            cout << "Ingrese una opcion: ";
-            cin >> opt;
+            if (reserva != nullptr) {
+                int opt;
+                cout << "Reserva encontrada! Que desea modificar?" << endl;
+                cout << "1: Numero de habitacion" << endl;
+                cout << "2: Fecha de inicio" << endl;
+                cout << "3: Fecha de salida" << endl;
+                cout << "4: Ambas fechas" << endl;
+                cout << "5: Todos los datos" << endl;
+                cout << "6: No modificar nada" << endl;
+                cout << "Ingrese una opcion: ";
+                cin >> opt;
 
-            switch (opt) {
-            case 1:
-            {
-                int numH;
-                cout << "Ingrese el numero de la nueva habitacion: ";
-                cin >> numH;
+                switch (opt) {
+                case 1:
+                {
+                    int numH;
+                    cout << "Ingrese el numero de la nueva habitacion: ";
+                    cin >> numH;
 
-                Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
-                if (habitacionActual != nullptr) {
-                    habitacionActual->setDisponibilidad(true);
+                    Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                    if (habitacionActual != nullptr) {
+                        habitacionActual->setDisponibilidad(true);
+                    }
+
+                    Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                    if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                        nuevaHabitacion->setDisponibilidad(false);
+                        reserva->setNumHabitacion(numH);
+                        cout << "Numero de habitacion actualizado." << endl;
+                    }
+                    else {
+                        cout << "La nueva habitacion no esta disponible." << endl;
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    string fechaInicio;
+                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                    cin.ignore();
+                    getline(cin, fechaInicio);
+                    reserva->setFechaInicio(fechaInicio);
+                    break;
+                }
+                case 3:
+                {
+                    string fechaFinal;
+                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                    cin.ignore();
+                    getline(cin, fechaFinal);
+                    reserva->setFechaFin(fechaFinal);
+                    break;
+                }
+                case 4:
+                {
+                    string fechaFinal, fechaInicio;
+                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                    getline(cin, fechaInicio);
+                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                    getline(cin, fechaFinal);
+
+                    reserva->setFechaInicio(fechaInicio);
+                    reserva->setFechaFin(fechaFinal);
+                    break;
+                }
+                case 5:
+                {
+                    int numH;
+                    string fechaInicio, fechaFinal;
+
+                    cout << "Ingrese el numero de la nueva habitacion: ";
+                    cin >> numH;
+                    cin.ignore();
+                    Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                    if (habitacionActual != nullptr) {
+                        habitacionActual->setDisponibilidad(true);
+                    }
+
+                    Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                    if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                        nuevaHabitacion->setDisponibilidad(false);
+                        reserva->setNumHabitacion(numH);
+                        cout << "Numero de habitacion actualizado." << endl;
+                    }
+                    else {
+                        cout << "La nueva habitacion no esta disponible." << endl;
+                    }
+
+                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                    getline(cin, fechaInicio);
+                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                    getline(cin, fechaFinal);
+
+                    reserva->setFechaInicio(fechaInicio);
+                    reserva->setFechaFin(fechaFinal);
+                    break;
+                }
+                case 6:
+                    return;
+                default:
+                    cout << "Opcion no valida." << endl;
+                    break;
                 }
 
-                Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
-                if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
-                    nuevaHabitacion->setDisponibilidad(false);
-                    reserva->setNumHabitacion(numH);
-                    cout << "Numero de habitacion actualizado." << endl;
-                }
-                else {
-                    cout << "La nueva habitacion no esta disponible." << endl;
-                }
-                break;
+                guardarReservas(colaReservas, "reservas.txt");
+                guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
+
+                cout << "Reserva modificada correctamente." << endl;
             }
-            case 2:
-            {
-                string fechaInicio;
-                cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                cin.ignore();
-                getline(cin, fechaInicio);
-                reserva->setFechaInicio(fechaInicio);
-                break;
-            }
-            case 3:
-            {
-                string fechaFinal;
-                cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                cin.ignore();
-                getline(cin, fechaFinal);
-                reserva->setFechaFin(fechaFinal);
-                break;
-            }
-            case 4:
-            {
-                string fechaFinal, fechaInicio;
-                cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                getline(cin, fechaInicio);
-                cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                getline(cin, fechaFinal);
-
-                reserva->setFechaInicio(fechaInicio);
-                reserva->setFechaFin(fechaFinal);
-                break;
-            }
-            case 5:
-            {
-                int numH;
-                string fechaInicio, fechaFinal;
-
-                cout << "Ingrese el numero de la nueva habitacion: ";
-                cin >> numH;
-                cin.ignore();
-                Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
-                if (habitacionActual != nullptr) {
-                    habitacionActual->setDisponibilidad(true);
-                }
-
-                Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
-                if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
-                    nuevaHabitacion->setDisponibilidad(false);
-                    reserva->setNumHabitacion(numH);
-                    cout << "Numero de habitacion actualizado." << endl;
-                }
-                else {
-                    cout << "La nueva habitacion no esta disponible." << endl;
-                }
-
-                cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                getline(cin, fechaInicio);
-                cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                getline(cin, fechaFinal);
-
-                reserva->setFechaInicio(fechaInicio);
-                reserva->setFechaFin(fechaFinal);
-                break;
-            }
-            case 6:
-                return;
-            default:
-                cout << "Opcion no valida." << endl;
-                break;
-            }
-
-            guardarReservas(colaReservas, "reservas.txt");
-            guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
-
-            cout << "Reserva modificada correctamente." << endl;
+            else cout << "Reserva no encontrada." << endl;
         }
-        else cout << "Reserva no encontrada." << endl;
     }
 
     void cancelarReserva(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
-        int idReserva;
-        cout << "Ingrese el ID de la reserva que desea cancelar: ";
-        cin >> idReserva;
+        if (colaReservas->estaVacia()) return;
+        else {
+            int idReserva;
+            cout << "Ingrese el ID de la reserva que desea cancelar: ";
+            cin >> idReserva;
 
-        Reserva* reserva = colaReservas->buscarReserva(idReserva);
+            Reserva* reserva = colaReservas->buscarReserva(idReserva);
 
-        if (reserva != nullptr) {
-            int numHabitacion = reserva->getNumHabitacion();
+            if (reserva != nullptr) {
+                int numHabitacion = reserva->getNumHabitacion();
 
-            Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numHabitacion);
-            if (habitacion != nullptr) {
-                habitacion->setDisponibilidad(true);
-                colaReservas->eliminarReserva(idReserva);
-                cout << "Reserva cancelada con exito.\n\n";
+                Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numHabitacion);
+                if (habitacion != nullptr) {
+                    habitacion->setDisponibilidad(true);
+                    colaReservas->eliminarReserva(idReserva);
+                    cout << "Reserva cancelada con exito.\n\n";
+                }
+                else cout << "No se encontro la habitacion asociada a la reserva.\n\n";
             }
-            else cout << "No se encontro la habitacion asociada a la reserva.\n\n";
+            else cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
         }
-        else cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
     }
 
     void mostrarReservas(ColaReservas<Reserva*>* colaReservas) {
-        system("cls");
         if (colaReservas->estaVacia()) cout << "No hay reservas.\n\n";
         else {
             cout << "Lista de reservas:\n";

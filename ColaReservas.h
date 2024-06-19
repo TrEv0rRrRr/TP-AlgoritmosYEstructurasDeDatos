@@ -53,9 +53,6 @@ void ColaReservas<T>::encolar(T v) {
 
 template<class T>
 T ColaReservas<T>::desencolar() {
-    if (estaVacia()) {
-        throw std::out_of_range("La cola está vacía");
-    }
     Nodo<T>* temp = frente;
     T dato = frente->dato;
     frente = frente->siguiente;
@@ -75,9 +72,6 @@ uint ColaReservas<T>::obtenerLongitud() const { return longitud; }
 
 template<class T>
 T ColaReservas<T>::obtenerPos(uint pos) const {
-    if (pos >= longitud) {
-        throw std::out_of_range("Índice fuera de rango");
-    }
     Nodo<T>* temp = frente;
     for (unsigned int i = 0; i < pos; ++i) {
         temp = temp->siguiente;
@@ -94,13 +88,8 @@ void ColaReservas<T>::imprimirCola() const {
     }
 }
 
-// Función para eliminar una reserva
 template<class T>
 void ColaReservas<T>::eliminarReserva(int id) {
-    if (estaVacia()) {
-        throw std::runtime_error("La cola está vacía");
-    }
-
     if (frente->dato->getId() == id) {
         desencolar();
         return;
@@ -111,10 +100,6 @@ void ColaReservas<T>::eliminarReserva(int id) {
     while (temp != NULL && temp->dato->getId() != id) {
         anterior = temp;
         temp = temp->siguiente;
-    }
-
-    if (temp == NULL) {
-        throw std::runtime_error("Reserva no encontrada");
     }
 
     anterior->siguiente = temp->siguiente;
@@ -134,5 +119,4 @@ T ColaReservas<T>::buscarReserva(int id) {
         }
         temp = temp->siguiente;
     }
-    throw std::runtime_error("Reserva no encontrada");
 }
