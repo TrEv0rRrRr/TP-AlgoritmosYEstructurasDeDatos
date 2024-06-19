@@ -120,7 +120,7 @@
     <ClInclude Include="Librerias.h" />
     <ClInclude Include="ListaClientes.h" />
     <ClInclude Include="ListaHabitaciones.h" />
-    <ClInclude Include="ListaReservas.h" />
+    <ClInclude Include="ColaReservas.h" />
     <ClInclude Include="Reserva.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

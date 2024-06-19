@@ -4,14 +4,14 @@
 #include "Habitacion.h"
 #include "ListaHabitaciones.h"
 #include "Reserva.h"
-#include "ListaReservas.h"
+#include "ColaReservas.h"
 
 class App
 {
 private:
     ListaClientes<Cliente*>* listaClientes = new ListaClientes<Cliente*>();
     ListaHabitaciones<Habitacion*>* listaHabitaciones = new ListaHabitaciones<Habitacion*>();
-    ListaReservas<Reserva*>* listaReservas = new ListaReservas<Reserva*>();
+    ColaReservas<Reserva*>* colaReservas = new ColaReservas<Reserva*>();
     bool habitacionesCargadas = false;
 
 public:
@@ -224,12 +224,12 @@ public:
 
     // -------------- FUNCIONES PARA RESERVAS --------------
 
-    void guardarReservas(ListaReservas<Reserva*>* lista, const string& nombreArchivo) {
+    void guardarReservas(ColaReservas<Reserva*>* cola, const string& nombreArchivo) {
         ofstream archivo(nombreArchivo);
 
         if (archivo.is_open()) {
-            for (uint i = 0; i < lista->getLongitud(); ++i) {
-                Reserva* reserva = lista->obtenerPos(i);
+            for (uint i = 0; i < cola->obtenerLongitud(); ++i) {
+                Reserva* reserva = cola->obtenerPos(i);
                 archivo << reserva->getId() << "," << reserva->getNombreCliente() << "," << reserva->getApellidoCliente() << "," << reserva->getNumHabitacion() << "," << reserva->getFechaInicio() << "," << reserva->getFechaFin() << endl;
             }
             archivo.close();
@@ -239,7 +239,7 @@ public:
         }
     }
 
-    void cargarReservas(ListaReservas<Reserva*>* lista, const string& nombreArchivo) {
+    void cargarReservas(ColaReservas<Reserva*>* cola, const string& nombreArchivo) {
         ifstream archivo(nombreArchivo);
         if (archivo.is_open()) {
             string linea;
@@ -265,7 +265,7 @@ public:
                 reserva->setNumHabitacion(numHabInt);
                 reserva->setFechaInicio(fechaInicio);
                 reserva->setFechaFin(fechaFin);
-                lista->agregarReserva(reserva);
+                cola->encolar(reserva);
             }
             archivo.close();
         }
@@ -274,7 +274,7 @@ public:
         }
     }
 
-    void reservarHabitacion(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones, string& nombreCliente, string& apellidoCliente) {
+    void reservarHabitacion(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones, string& nombreCliente, string& apellidoCliente) {
         system("cls");
         string fInicio, fFinal;
         int numH;
@@ -303,29 +303,22 @@ public:
                 reserva->setFechaFin(fFinal);
                 reserva->setId(idReserva);
 
-                listaReservas->agregarReserva(reserva);
+                colaReservas->encolar(reserva);
 
                 habitacion->setDisponibilidad(false);
 
                 cout << "Reserva realizada con exito.\n\n";
-                menuPrincipal();
             }
-            else {
-                cout << "La habitacion no esta disponible para reservar.\n\n";
-                menuPrincipal();
-            }
+            else cout << "La habitacion no esta disponible para reservar.\n\n";
         }
-        else {
-            cout << "La habitacion no se encontro.\n\n";
-            menuPrincipal();
-        }
+        else cout << "La habitacion no se encontro.\n\n";
     }
 
-    void modificarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
+    void modificarReserva(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
         int idReserva;
         cout << "Ingrese el ID de la reserva: ";
         cin >> idReserva;
-        Reserva* reserva = listaReservas->buscarReserva(idReserva);
+        Reserva* reserva = colaReservas->buscarReserva(idReserva);
 
         if (reserva != nullptr) {
             int opt;
@@ -431,7 +424,7 @@ public:
                 break;
             }
 
-            guardarReservas(listaReservas, "reservas.txt");
+            guardarReservas(colaReservas, "reservas.txt");
             guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
 
             cout << "Reserva modificada correctamente." << endl;
@@ -439,12 +432,12 @@ public:
         else cout << "Reserva no encontrada." << endl;
     }
 
-    void cancelarReserva(ListaReservas<Reserva*>* listaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
+    void cancelarReserva(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
         int idReserva;
         cout << "Ingrese el ID de la reserva que desea cancelar: ";
         cin >> idReserva;
 
-        Reserva* reserva = listaReservas->buscarReserva(idReserva);
+        Reserva* reserva = colaReservas->buscarReserva(idReserva);
 
         if (reserva != nullptr) {
             int numHabitacion = reserva->getNumHabitacion();
@@ -452,7 +445,7 @@ public:
             Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numHabitacion);
             if (habitacion != nullptr) {
                 habitacion->setDisponibilidad(true);
-                listaReservas->eliminarReserva(idReserva);
+                colaReservas->eliminarReserva(idReserva);
                 cout << "Reserva cancelada con exito.\n\n";
             }
             else cout << "No se encontro la habitacion asociada a la reserva.\n\n";
@@ -460,41 +453,27 @@ public:
         else cout << "No se encontro ninguna reserva con el ID proporcionado.\n\n";
     }
 
-    void imprimirReservas(ListaReservas<Reserva*>* lista, uint indice) {
-        if (indice < lista->getLongitud()) {
-            Reserva* reserva = lista->obtenerPos(indice);
-            cout << reserva->getId() << "\t"
-                << reserva->getApellidoCliente() << ", " << reserva->getNombreCliente() << "\t"
-                << reserva->getNumHabitacion() << "\t\t"
-                << reserva->getFechaInicio() << " - " << reserva->getFechaFin() << endl;
-            cout << "_______________________________________________________________________________\n";
-            imprimirReservas(lista, indice + 1);
-        }
-    }
-
-    void mostrarReservas(ListaReservas<Reserva*>* listaReservas) {
+    void mostrarReservas(ColaReservas<Reserva*>* colaReservas) {
         system("cls");
-        if (listaReservas->isEmpty()) {
-            cout << "No hay reservas.\n\n";
-        }
+        if (colaReservas->estaVacia()) cout << "No hay reservas.\n\n";
         else {
             cout << "Lista de reservas:\n";
-            cout << "ID\tCliente\t\tHabitacion\tFechas de reserva\n";
-            imprimirReservas(listaReservas, 0);
+            cout << "ID\tCliente\t\tHabitacion\tFecha de entrada - Fecha de salida\n";
+            colaReservas->imprimirCola();
         }
     }
 
     // -------------- FUNCIONES PRINCIPALES --------------
 
-    void cargarDatos(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ListaReservas<Reserva*>* listaR) {
+    void cargarDatos(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
         cargarHabitaciones(listaH, "habitaciones.txt");
-        cargarReservas(listaR, "reservas.txt");
+        cargarReservas(colaR, "reservas.txt");
         cargarClientes(listaC, "clientes.txt");
     }
 
-    void guardarDatos(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ListaReservas<Reserva*>* listaR) {
+    void guardarDatos(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
         guardarHabitaciones(listaH, "habitaciones.txt");
-        guardarReservas(listaR, "reservas.txt");
+        guardarReservas(colaR, "reservas.txt");
         guardarClientes(listaC, "clientes.txt");
     }
 
@@ -507,7 +486,7 @@ public:
         cout << "Ingrese una opcion: ";
     }
 
-    bool manejarMenuRegistro(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ListaReservas<Reserva*>* listaR) {
+    bool manejarMenuRegistro(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
         int opt;
         cin >> opt;
         switch (opt) {
@@ -516,7 +495,7 @@ public:
             return true;
             break;
         case 2: // SALIR DEL PROGRAMA
-            guardarDatos(listaC, listaH, listaR);
+            guardarDatos(listaC, listaH, colaR);
             exit(0);
             break;
         default:
@@ -539,7 +518,7 @@ public:
         cout << "Ingrese una opcion: ";
     }
 
-    void manejarMenuPrincipal(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ListaReservas<Reserva*>* listaR) {
+    void manejarMenuPrincipal(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
 
         pair<string, string> datosCliente = cargarClientes(listaC, "clientes.txt");
         string nombreCliente = datosCliente.first;
@@ -556,30 +535,30 @@ public:
             break;
         case 2: // AGREGAR RESERVAS - HECHA
             system("cls");
-            reservarHabitacion(listaR, listaH, nombreCliente, apellidoCliente);
+            reservarHabitacion(colaR, listaH, nombreCliente, apellidoCliente);
             limpiarConsola();
             break;
         case 3: // VER RESERVAS - HECHA
             system("cls");
-            mostrarReservas(listaR);
+            mostrarReservas(colaR);
             limpiarConsola();
             break;
         case 4: // MODIFICAR RESERVA - HECHA
             system("cls");
-            mostrarReservas(listaR);
+            mostrarReservas(colaR);
             cout << "\n\n";
-            modificarReserva(listaR, listaH);
+            modificarReserva(colaR, listaH);
             limpiarConsola();
             break;
         case 5: // ELIMINAR RESERVA - HECHA
             system("cls");
-            mostrarReservas(listaR);
+            mostrarReservas(colaR);
             cout << "\n\n";
-            cancelarReserva(listaR, listaH);
+            cancelarReserva(colaR, listaH);
             limpiarConsola();
             break;
         case 6: // SALIR DEL PROGRAMA
-            guardarDatos(listaC, listaH, listaR);
+            guardarDatos(listaC, listaH, colaR);
             exit(0);
             break;
         default:
@@ -601,7 +580,7 @@ public:
 
     void run() {
         cargarHabitaciones(listaHabitaciones, "habitaciones.txt");
-        cargarReservas(listaReservas, "reservas.txt");
+        cargarReservas(colaReservas, "reservas.txt");
         // Verificar si el archivo de clientes existe y cargarlos si es asi
         bool clientesRegistrados = archivoExiste("clientes.txt");
 
@@ -615,7 +594,7 @@ public:
         if (!clientesRegistrados) {
             while (true) {
                 menuRegistro();
-                clientesRegistrados = manejarMenuRegistro(listaClientes, listaHabitaciones, listaReservas);
+                clientesRegistrados = manejarMenuRegistro(listaClientes, listaHabitaciones, colaReservas);
                 if (clientesRegistrados) break;
             }
         }
@@ -632,11 +611,11 @@ public:
         // Logica principal del programa
         while (true) {
             menuPrincipal();
-            manejarMenuPrincipal(listaClientes, listaHabitaciones, listaReservas);
+            manejarMenuPrincipal(listaClientes, listaHabitaciones, colaReservas);
         }
     }
 };
 
 App::App() {}
 
-App::~App() { delete listaClientes; delete listaHabitaciones; delete listaReservas; }
+App::~App() { delete listaClientes; delete listaHabitaciones; }

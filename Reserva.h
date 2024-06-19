@@ -27,6 +27,10 @@ public:
     void setFechaInicio(string fechaInicio) { this->fechaInicio = fechaInicio; }
     void setFechaFin(string fechaFin) { this->fechaFin = fechaFin; }
     void setId(int id) { this->id = id; }
+    string toString() const {
+        return to_string(id) + "\t" + apellidoCliente + ", " + nombreCliente + "\t" +
+               to_string(numHabitacion) + "\t\t\t" + fechaInicio + " - " + fechaFin;
+    }
 };
 
 Reserva::~Reserva() {}
