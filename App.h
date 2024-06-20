@@ -33,9 +33,6 @@ public:
             }
             archivo.close();
         }
-        else {
-            cout << "Error al abrir el archivo " << nombreArchivo << " para escritura." << endl;
-        }
     }
 
     pair<string, string> cargarClientes(ListaClientes<Cliente*>* lista, const string& nombreArchivo) {
@@ -63,16 +60,10 @@ public:
             }
             archivo.close();
         }
-        else {
-            cout << "El archivo " << nombreArchivo << " no existe. Se creara uno nuevo al guardar usuarios." << endl;
-        }
-
         return make_pair(nombreRegistrado, apellidoRegistrado);
     }
 
     void registrarCliente(ListaClientes<Cliente*>* lista) {
-        system("cls");
-
         Cliente* c = new Cliente();
 
         string nombre, apellido, correo, telefono;
@@ -110,9 +101,6 @@ public:
             }
             archivo.close();
         }
-        else {
-            cout << "Error al abrir el archivo " << nombreArchivo << " para escritura." << endl;
-        }
     }
 
     void cargarHabitaciones(ListaHabitaciones<Habitacion*>* lista, const string& nombreArchivo) {
@@ -143,29 +131,47 @@ public:
                 archivo.close();
                 habitacionesCargadas = true;
             }
-            else {
-                cerr << "Error: No se pudo abrir el archivo " << nombreArchivo << endl;
-            }
         }
     }
 
-    void imprimirHabitaciones(ListaHabitaciones<Habitacion*>* lista, uint indice) {
+    void imprimirHabitacionesPaginadas(ListaHabitaciones<Habitacion*>* lista, uint indice, uint pagina, uint elementosPorPagina) {
+        system("cls");
+        uint totalPaginas = (lista->getLongitud() + elementosPorPagina - 1) / elementosPorPagina;
+     
         if (indice < lista->getLongitud()) {
-            Habitacion* habitacion = lista->obtenerPos(indice);
-            cout << "\t" << habitacion->getNumPiso() << "\t\t" << habitacion->getNumHab() << "\t\t\t" << habitacion->getTipo() << "\t\t\t" << (habitacion->getDisponibilidad() ? "Si" : "No") << endl;
-            cout << "________________________________________________________________________________________\n";
-            imprimirHabitaciones(lista, indice + 1);
+            cout << "Lista de habitaciones:\n";
+            cout << "I: Individual\tS: Suite:\tD: Doble\n\n";
+            cout << "Num. Piso\tNum. Habitacion\t\tTipo de habitacion\t\tDisponibilidad\n";
+            for (uint i = indice; i < lista->getLongitud() && i < indice + elementosPorPagina; ++i) {
+                Habitacion* habitacion = lista->obtenerPos(i);
+                cout << "    " << habitacion->getNumPiso() << "\t\t      " << habitacion->getNumHab() << "\t\t\t" << habitacion->getTipo() << "\t\t\t      " << (habitacion->getDisponibilidad() ? "Si" : "No") << "\n\n";
+            }
         }
+
+        cout << "\nPagina " << pagina << " de " << totalPaginas << "\n";
+        cout << "Presione 'N' para la siguiente pagina, 'P' para la pagina anterior, 'M' para el menu principal.\n";
+
+        char tecla = _getch();
+        if (tecla == 'N' || tecla == 'n') {
+            if (pagina < totalPaginas) imprimirHabitacionesPaginadas(lista, indice + elementosPorPagina, pagina + 1, elementosPorPagina);
+            else imprimirHabitacionesPaginadas(lista, indice, pagina, elementosPorPagina);
+        }
+        else if (tecla == 'P' || tecla == 'p') {
+            if (pagina > 1) imprimirHabitacionesPaginadas(lista, indice - elementosPorPagina, pagina - 1, elementosPorPagina);
+            else imprimirHabitacionesPaginadas(lista, indice, pagina, elementosPorPagina);
+        }
+        else if (tecla == 'M' || tecla == 'm') return;
+        else imprimirHabitacionesPaginadas(lista, indice, pagina, elementosPorPagina);
     }
 
     void mostrarHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
         if (lista->isEmpty()) {
+            setConsoleColor(4, 15); // Red background, white text
             cout << "No hay habitaciones.\n\n";
+            resetConsoleColor();
         }
         else {
-            cout << "Lista de habitaciones:\n";
-            cout << "Num. Piso\tNum. Habitacion\t\tTipo de habitacion\t\tDisponibilidad\n";
-            imprimirHabitaciones(lista, 0);
+            imprimirHabitacionesPaginadas(lista, 0, 1, 10);
         }
     }
 
@@ -173,7 +179,7 @@ public:
         const int NUM_PISOS = 2;
         const int HABITACIONES_POR_PISO = 10;
 
-        string tipos[] = { "Individual", "Doble", "Suite" };
+        string tipos[] = { "I", "D", "S" };
 
         for (int piso = 1; piso <= NUM_PISOS; ++piso) {
             int numHabInicio = (piso == 1) ? 101 : 201;
@@ -234,9 +240,6 @@ public:
             }
             archivo.close();
         }
-        else {
-            cout << "Error al abrir el archivo " << nombreArchivo << " para escritura." << endl;
-        }
     }
 
     void cargarReservas(ColaReservas<Reserva*>* cola, const string& nombreArchivo) {
@@ -268,9 +271,6 @@ public:
                 cola->encolar(reserva);
             }
             archivo.close();
-        }
-        else {
-            cerr << "Error: No se pudo abrir el archivo " << nombreArchivo << endl;
         }
     }
 
@@ -349,11 +349,9 @@ public:
                     if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
                         nuevaHabitacion->setDisponibilidad(false);
                         reserva->setNumHabitacion(numH);
-                        cout << "Numero de habitacion actualizado." << endl;
+                        cout << "Numero de habitacion actualizado.\n" << "Reserva modificada correctamente!\n";
                     }
-                    else {
-                        cout << "La nueva habitacion no esta disponible." << endl;
-                    }
+                    else cout << "La nueva habitacion no esta disponible." << endl;
                     break;
                 }
                 case 2:
@@ -363,6 +361,7 @@ public:
                     cin.ignore();
                     getline(cin, fechaInicio);
                     reserva->setFechaInicio(fechaInicio);
+                    cout << "Reserva modificada correctamente!\n";
                     break;
                 }
                 case 3:
@@ -372,6 +371,7 @@ public:
                     cin.ignore();
                     getline(cin, fechaFinal);
                     reserva->setFechaFin(fechaFinal);
+                    cout << "Reserva modificada correctamente!\n";
                     break;
                 }
                 case 4:
@@ -384,6 +384,7 @@ public:
 
                     reserva->setFechaInicio(fechaInicio);
                     reserva->setFechaFin(fechaFinal);
+                    cout << "Reserva modificada correctamente!\n";
                     break;
                 }
                 case 5:
@@ -405,9 +406,7 @@ public:
                         reserva->setNumHabitacion(numH);
                         cout << "Numero de habitacion actualizado." << endl;
                     }
-                    else {
-                        cout << "La nueva habitacion no esta disponible." << endl;
-                    }
+                    else cout << "La nueva habitacion no esta disponible." << endl;
 
                     cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
                     getline(cin, fechaInicio);
@@ -416,6 +415,7 @@ public:
 
                     reserva->setFechaInicio(fechaInicio);
                     reserva->setFechaFin(fechaFinal);
+                    cout << "Reserva modificada correctamente!\n";
                     break;
                 }
                 case 6:
@@ -427,8 +427,6 @@ public:
 
                 guardarReservas(colaReservas, "reservas.txt");
                 guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
-
-                cout << "Reserva modificada correctamente." << endl;
             }
             else cout << "Reserva no encontrada." << endl;
         }
@@ -450,7 +448,7 @@ public:
                 if (habitacion != nullptr) {
                     habitacion->setDisponibilidad(true);
                     colaReservas->eliminarReserva(idReserva);
-                    cout << "Reserva cancelada con exito.\n\n";
+                    cout << "Reserva cancelada con exito!\n\n";
                 }
                 else cout << "No se encontro la habitacion asociada a la reserva.\n\n";
             }
@@ -458,13 +456,13 @@ public:
         }
     }
 
-    void mostrarReservas(ColaReservas<Reserva*>* colaReservas) {
-        if (colaReservas->estaVacia()) cout << "No hay reservas.\n\n";
-        else {
-            cout << "Lista de reservas:\n";
-            cout << "ID\tCliente\t\tHabitacion\tFecha de entrada - Fecha de salida\n";
-            colaReservas->imprimirCola();
+    void mostrarReservas(ColaReservas<Reserva*>* cola, bool paginacion = true) {
+        if (cola->estaVacia()) {
+            setConsoleColor(4, 15); // Red background, white text
+            cout << "No hay reservas.\n\n";
+            resetConsoleColor();
         }
+        else cola->imprimirCola(1, paginacion);
     }
 
     // -------------- FUNCIONES PRINCIPALES --------------
@@ -549,14 +547,14 @@ public:
             break;
         case 4: // MODIFICAR RESERVA - HECHA
             system("cls");
-            mostrarReservas(colaR);
+            mostrarReservas(colaR, false);
             cout << "\n\n";
             modificarReserva(colaR, listaH);
             limpiarConsola();
             break;
         case 5: // ELIMINAR RESERVA - HECHA
             system("cls");
-            mostrarReservas(colaR);
+            mostrarReservas(colaR, false);
             cout << "\n\n";
             cancelarReserva(colaR, listaH);
             limpiarConsola();
@@ -580,6 +578,16 @@ public:
     void limpiarConsola() {
         system("pause");
         system("cls");
+    }
+
+    void setConsoleColor(int background, int foreground) {
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, (background << 4) | foreground);
+    }
+
+    void resetConsoleColor() {
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hConsole, 15); // White text on black background
     }
 
     void run() {

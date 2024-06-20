@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <conio.h>
+#include <windows.h>
 #include <functional>
 #include <vector>
 #include <string>

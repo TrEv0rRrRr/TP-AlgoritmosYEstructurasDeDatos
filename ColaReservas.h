@@ -30,9 +30,10 @@ public:
     uint obtenerLongitud() const;
     T obtenerPos(uint pos) const;
 
-    void imprimirCola() const;
+    void imprimirCola(uint pagina, bool paginacion) const;
     void eliminarReserva(int id);
     T buscarReserva(int id);
+    int contarElementos() const;
 };
 
 template<class T>
@@ -80,11 +81,53 @@ T ColaReservas<T>::obtenerPos(uint pos) const {
 }
 
 template<class T>
-void ColaReservas<T>::imprimirCola() const {
-    Nodo<T>* temp = frente;
-    while (temp != NULL) {
-        cout << temp->dato->toString() << endl;
-        temp = temp->siguiente;
+int ColaReservas<T>::contarElementos() const {
+    int contador = 0;
+    Nodo<T>* actual = frente;
+    while (actual != nullptr) {
+        contador++;
+        actual = actual->siguiente;
+    }
+    return contador;
+}
+
+template<class T>
+void ColaReservas<T>::imprimirCola(uint pagina, bool paginacion) const {
+    system("cls");
+    Nodo<T>* actual = frente;
+    uint elementosPorPagina = 10;
+    uint totalElementos = contarElementos();
+    uint totalPaginas = (totalElementos + elementosPorPagina - 1) / elementosPorPagina;
+    uint inicio = (pagina - 1) * elementosPorPagina;
+    uint fin = inicio + elementosPorPagina;
+    uint indice = 0;
+
+    cout << "Lista de Reservas:\n";
+    cout << "  ID\tNombre\tApellido    Num. Habitacion\tFecha de Entrada - Fecha de Salida\n";
+    while (actual != nullptr && indice < fin) {
+        if (indice >= inicio) {
+            cout << actual->dato->getId() << "\t" << actual->dato->getNombreCliente() << "\t  " << actual->dato->getApellidoCliente() << "\t\t  " << actual->dato->getNumHabitacion() << "\t\t    " << actual->dato->getFechaInicio() << "  -  " << actual->dato->getFechaFin() << "\n\n";
+        }
+        actual = actual->siguiente;
+        indice++;
+    }
+
+    cout << "\nPágina " << pagina << " de " << totalPaginas << "\n";
+
+    if (paginacion) {
+        cout << "Presione 'N' para la siguiente página, 'P' para la página anterior, 'M' para el menú principal.\n";
+
+        char tecla = _getch();
+        if (tecla == 'N' || tecla == 'n') {
+            if (pagina < totalPaginas) imprimirCola(pagina + 1, true);
+            else imprimirCola(pagina, true);
+        }
+        else if (tecla == 'P' || tecla == 'p') {
+            if (pagina > 1) imprimirCola(pagina - 1, true);
+            else imprimirCola(pagina, true);
+        }
+        else if (tecla == 'M' || tecla == 'm') return;
+        else imprimirCola(pagina, true);
     }
 }
 
