@@ -29,7 +29,7 @@ public:
                 archivo << cliente->getNombre() << ","
                     << cliente->getApellido() << ","
                     << cliente->getCorreo() << ","
-                    << cliente->getTelefono() << endl;
+                    << cliente->getDNI() << endl;
             }
             archivo.close();
         }
@@ -43,16 +43,16 @@ public:
             string linea;
             while (getline(archivo, linea)) {
                 stringstream ss(linea);
-                string nombre, apellido, correo, telefono;
+                string nombre, apellido, correo, dni;
                 getline(ss, nombre, ',');
                 getline(ss, apellido, ',');
                 getline(ss, correo, ',');
-                getline(ss, telefono, ',');
+                getline(ss, dni, ',');
                 Cliente* cliente = new Cliente();
                 cliente->setNombre(nombre);
                 cliente->setApellido(apellido);
                 cliente->setCorreo(correo);
-                cliente->setTelefono(telefono);
+                cliente->setDNI(dni);
                 lista->agregaClienteAlFinal(cliente);
 
                 nombreRegistrado = nombre;
@@ -66,7 +66,7 @@ public:
     void registrarCliente(ListaClientes<Cliente*>* lista) {
         Cliente* c = new Cliente();
 
-        string nombre, apellido, correo, telefono;
+        string nombre, apellido, correo, dni;
 
         cout << "Ingrese su nombre: ";
         cin.ignore();
@@ -75,13 +75,13 @@ public:
         getline(cin, apellido);
         cout << "Ingrese su correo: ";
         getline(cin, correo);
-        cout << "Ingrese su telefono: ";
-        getline(cin, telefono);
+        cout << "Ingrese su DNI: ";
+        getline(cin, dni);
 
         c->setNombre(nombre);
         c->setApellido(apellido);
         c->setCorreo(correo);
-        c->setTelefono(telefono);
+        c->setDNI(dni);
 
         lista->agregaClienteAlFinal(c);
     }
@@ -321,114 +321,119 @@ public:
             cin >> idReserva;
             Reserva* reserva = colaReservas->buscarReserva(idReserva);
 
-            if (reserva != nullptr) {
-                int opt;
-                cout << "Reserva encontrada! Que desea modificar?" << endl;
-                cout << "1: Numero de habitacion" << endl;
-                cout << "2: Fecha de inicio" << endl;
-                cout << "3: Fecha de salida" << endl;
-                cout << "4: Ambas fechas" << endl;
-                cout << "5: Todos los datos" << endl;
-                cout << "6: No modificar nada" << endl;
-                cout << "Ingrese una opcion: ";
-                cin >> opt;
-
-                switch (opt) {
-                case 1:
-                {
-                    int numH;
-                    cout << "Ingrese el numero de la nueva habitacion: ";
-                    cin >> numH;
-
-                    Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
-                    if (habitacionActual != nullptr) {
-                        habitacionActual->setDisponibilidad(true);
-                    }
-
-                    Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
-                    if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
-                        nuevaHabitacion->setDisponibilidad(false);
-                        reserva->setNumHabitacion(numH);
-                        cout << "Numero de habitacion actualizado.\n" << "Reserva modificada correctamente!\n";
-                    }
-                    else cout << "La nueva habitacion no esta disponible." << endl;
-                    break;
-                }
-                case 2:
-                {
-                    string fechaInicio;
-                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                    cin.ignore();
-                    getline(cin, fechaInicio);
-                    reserva->setFechaInicio(fechaInicio);
-                    cout << "Reserva modificada correctamente!\n";
-                    break;
-                }
-                case 3:
-                {
-                    string fechaFinal;
-                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                    cin.ignore();
-                    getline(cin, fechaFinal);
-                    reserva->setFechaFin(fechaFinal);
-                    cout << "Reserva modificada correctamente!\n";
-                    break;
-                }
-                case 4:
-                {
-                    string fechaFinal, fechaInicio;
-                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                    getline(cin, fechaInicio);
-                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                    getline(cin, fechaFinal);
-
-                    reserva->setFechaInicio(fechaInicio);
-                    reserva->setFechaFin(fechaFinal);
-                    cout << "Reserva modificada correctamente!\n";
-                    break;
-                }
-                case 5:
-                {
-                    int numH;
-                    string fechaInicio, fechaFinal;
-
-                    cout << "Ingrese el numero de la nueva habitacion: ";
-                    cin >> numH;
-                    cin.ignore();
-                    Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
-                    if (habitacionActual != nullptr) {
-                        habitacionActual->setDisponibilidad(true);
-                    }
-
-                    Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
-                    if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
-                        nuevaHabitacion->setDisponibilidad(false);
-                        reserva->setNumHabitacion(numH);
-                        cout << "Numero de habitacion actualizado." << endl;
-                    }
-                    else cout << "La nueva habitacion no esta disponible." << endl;
-
-                    cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
-                    getline(cin, fechaInicio);
-                    cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
-                    getline(cin, fechaFinal);
-
-                    reserva->setFechaInicio(fechaInicio);
-                    reserva->setFechaFin(fechaFinal);
-                    cout << "Reserva modificada correctamente!\n";
-                    break;
-                }
-                case 6:
-                    return;
-                default:
-                    cout << "Opcion no valida." << endl;
-                    break;
-                }
-
-                guardarReservas(colaReservas, "reservas.txt");
-                guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
+            if (reserva == nullptr) {
+                cout << "No se encontro la reserva con el ID " << idReserva << ".\n";
+                return;
             }
-            else cout << "Reserva no encontrada." << endl;
+            else {
+                if (reserva != nullptr) {
+                    int opt;
+                    cout << "Reserva encontrada! Que desea modificar?" << endl;
+                    cout << "1: Numero de habitacion" << endl;
+                    cout << "2: Fecha de inicio" << endl;
+                    cout << "3: Fecha de salida" << endl;
+                    cout << "4: Ambas fechas" << endl;
+                    cout << "5: Todos los datos" << endl;
+                    cout << "6: No modificar nada" << endl;
+                    cout << "Ingrese una opcion: ";
+                    cin >> opt;
+
+                    switch (opt) {
+                    case 1:
+                    {
+                        int numH;
+                        cout << "Ingrese el numero de la nueva habitacion: ";
+                        cin >> numH;
+
+                        Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                        if (habitacionActual != nullptr) {
+                            habitacionActual->setDisponibilidad(true);
+                        }
+
+                        Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                        if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                            nuevaHabitacion->setDisponibilidad(false);
+                            reserva->setNumHabitacion(numH);
+                            cout << "Numero de habitacion actualizado.\n" << "Reserva modificada correctamente!\n";
+                        }
+                        else cout << "La nueva habitacion no esta disponible." << endl;
+                        break;
+                    }
+                    case 2:
+                    {
+                        string fechaInicio;
+                        cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                        cin.ignore();
+                        getline(cin, fechaInicio);
+                        reserva->setFechaInicio(fechaInicio);
+                        cout << "Reserva modificada correctamente!\n";
+                        break;
+                    }
+                    case 3:
+                    {
+                        string fechaFinal;
+                        cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                        cin.ignore();
+                        getline(cin, fechaFinal);
+                        reserva->setFechaFin(fechaFinal);
+                        cout << "Reserva modificada correctamente!\n";
+                        break;
+                    }
+                    case 4:
+                    {
+                        string fechaFinal, fechaInicio;
+                        cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                        getline(cin, fechaInicio);
+                        cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                        getline(cin, fechaFinal);
+
+                        reserva->setFechaInicio(fechaInicio);
+                        reserva->setFechaFin(fechaFinal);
+                        cout << "Reserva modificada correctamente!\n";
+                        break;
+                    }
+                    case 5:
+                    {
+                        int numH;
+                        string fechaInicio, fechaFinal;
+
+                        cout << "Ingrese el numero de la nueva habitacion: ";
+                        cin >> numH;
+                        cin.ignore();
+                        Habitacion* habitacionActual = listaHabitaciones->buscarHabitacion(reserva->getNumHabitacion());
+                        if (habitacionActual != nullptr) {
+                            habitacionActual->setDisponibilidad(true);
+                        }
+
+                        Habitacion* nuevaHabitacion = listaHabitaciones->buscarHabitacion(numH);
+                        if (nuevaHabitacion != nullptr && nuevaHabitacion->getDisponibilidad()) {
+                            nuevaHabitacion->setDisponibilidad(false);
+                            reserva->setNumHabitacion(numH);
+                            cout << "Numero de habitacion actualizado." << endl;
+                        }
+                        else cout << "La nueva habitacion no esta disponible." << endl;
+
+                        cout << "Ingrese la nueva fecha de inicio (dd/mm/aaaa): ";
+                        getline(cin, fechaInicio);
+                        cout << "Ingrese la nueva fecha de salida (dd/mm/aaaa): ";
+                        getline(cin, fechaFinal);
+
+                        reserva->setFechaInicio(fechaInicio);
+                        reserva->setFechaFin(fechaFinal);
+                        cout << "Reserva modificada correctamente!\n";
+                        break;
+                    }
+                    case 6:
+                        return;
+                    default:
+                        cout << "Opcion no valida." << endl;
+                        break;
+                    }
+
+                    guardarReservas(colaReservas, "reservas.txt");
+                    guardarHabitaciones(listaHabitaciones, "habitaciones.txt");
+                }
+            }
         }
     }
 
@@ -479,93 +484,132 @@ public:
         guardarClientes(listaC, "clientes.txt");
     }
 
-    void menuRegistro() {
+    void menuRegistro(int opcionSeleccionada) {
+        system("cls");
+        resetConsoleColor();
         cout << "Bienvenido al sistema de gestion de reservas de hotel" << endl;
         cout << "--------------------------------------------------" << endl;
+        setConsoleColor(0, opcionSeleccionada == 1 ? 10 : 15); // Verde si esta seleccionado, blanco si no
         cout << "1. Registrarse" << endl;
+        setConsoleColor(0, opcionSeleccionada == 2 ? 10 : 15); // Verde si esta seleccionado, blanco si no
         cout << "2. Salir" << endl;
-        cout << "--------------------------------------------------" << endl;
-        cout << "Ingrese una opcion: ";
+        resetConsoleColor();
     }
 
     bool manejarMenuRegistro(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
-        int opt;
-        cin >> opt;
-        switch (opt) {
-        case 1: // REGISTRARSE
-            registrarCliente(listaC);
-            return true;
-            break;
-        case 2: // SALIR DEL PROGRAMA
-            guardarDatos(listaC, listaH, colaR);
-            exit(0);
-            break;
-        default:
-            cout << "Opcion no valida. Por favor, ingrese un numero del 1 al 2." << endl;
-            break;
+        int opcionSeleccionada = 1;
+        int key;
+
+        while (true) {
+            menuRegistro(opcionSeleccionada);
+            key = _getch();
+
+            if (key == 224) {
+                switch (_getch()) {
+                case 72:
+                    if (opcionSeleccionada > 1) opcionSeleccionada--;
+                    break;
+                case 80:
+                    if (opcionSeleccionada < 2) opcionSeleccionada++;
+                    break;
+                }
+            }
+            else if (key == 13) {
+                switch (opcionSeleccionada) {
+                case 1: // REGISTRARSE
+                    system("cls");
+                    registrarCliente(listaC);
+                    guardarClientes(listaC, "clientes.txt");
+                    limpiarConsola();
+                    return true;
+                case 2: // SALIR DEL PROGRAMA
+                    guardarDatos(listaC, listaH, colaR);
+                    exit(0);
+                }
+            }
         }
-        return false;
     }
 
-    void menuPrincipal() {
+    void menuPrincipal(int opcionSeleccionada) {
+        system("cls");
+        resetConsoleColor();
         cout << "Bienvenido al sistema de gestion de reservas de hotel" << endl;
         cout << "--------------------------------------------------" << endl;
+        setConsoleColor(0, opcionSeleccionada == 1 ? 10 : 15);
         cout << "1. Ver disponibilidad de habitaciones" << endl;
+        setConsoleColor(0, opcionSeleccionada == 2 ? 10 : 15);
         cout << "2. Realizar una nueva reserva" << endl;
+        setConsoleColor(0, opcionSeleccionada == 3 ? 10 : 15);
         cout << "3. Ver reservas" << endl;
+        setConsoleColor(0, opcionSeleccionada == 4 ? 10 : 15);
         cout << "4. Modificar una reserva" << endl;
+        setConsoleColor(0, opcionSeleccionada == 5 ? 10 : 15);
         cout << "5. Cancelar una reserva" << endl;
+        setConsoleColor(0, opcionSeleccionada == 6 ? 10 : 15);
         cout << "6. Salir" << endl;
-        cout << "--------------------------------------------------" << endl;
-        cout << "Ingrese una opcion: ";
+        resetConsoleColor();
     }
 
     void manejarMenuPrincipal(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
-
         pair<string, string> datosCliente = cargarClientes(listaC, "clientes.txt");
         string nombreCliente = datosCliente.first;
         string apellidoCliente = datosCliente.second;
 
-        int opt;
-        cin >> opt;
-        switch (opt) {
-        case 1: // HABITACIONES DISPONIBLES - HECHA
-            system("cls");
-            ordenarHabitaciones(listaH);
-            mostrarHabitaciones(listaH);
-            limpiarConsola();
-            break;
-        case 2: // AGREGAR RESERVAS - HECHA
-            system("cls");
-            reservarHabitacion(colaR, listaH, nombreCliente, apellidoCliente);
-            limpiarConsola();
-            break;
-        case 3: // VER RESERVAS - HECHA
-            system("cls");
-            mostrarReservas(colaR);
-            limpiarConsola();
-            break;
-        case 4: // MODIFICAR RESERVA - HECHA
-            system("cls");
-            mostrarReservas(colaR, false);
-            cout << "\n\n";
-            modificarReserva(colaR, listaH);
-            limpiarConsola();
-            break;
-        case 5: // ELIMINAR RESERVA - HECHA
-            system("cls");
-            mostrarReservas(colaR, false);
-            cout << "\n\n";
-            cancelarReserva(colaR, listaH);
-            limpiarConsola();
-            break;
-        case 6: // SALIR DEL PROGRAMA
-            guardarDatos(listaC, listaH, colaR);
-            exit(0);
-            break;
-        default:
-            cout << "Opcion no valida. Por favor, ingrese un numero del 1 al 7." << endl;
-            break;
+        int opcionSeleccionada = 1;
+        int key;
+
+        while (true) {
+            menuPrincipal(opcionSeleccionada);
+            key = _getch();
+
+            if (key == 224) {
+                switch (_getch()) {
+                case 72:
+                    if (opcionSeleccionada > 1) opcionSeleccionada--;
+                    break;
+                case 80:
+                    if (opcionSeleccionada < 6) opcionSeleccionada++;
+                    break;
+                }
+            }
+            else if (key == 13) {
+                switch (opcionSeleccionada) {
+                case 1: // HABITACIONES DISPONIBLES
+                    system("cls");
+                    ordenarHabitaciones(listaH);
+                    mostrarHabitaciones(listaH);
+                    limpiarConsola();
+                    break;
+                case 2: // AGREGAR RESERVAS
+                    system("cls");
+                    reservarHabitacion(colaR, listaH, nombreCliente, apellidoCliente);
+                    limpiarConsola();
+                    break;
+                case 3: // VER RESERVAS
+                    system("cls");
+                    mostrarReservas(colaR);
+                    limpiarConsola();
+                    break;
+                case 4: // MODIFICAR RESERVA
+                    system("cls");
+                    mostrarReservas(colaR, false);
+                    cout << "\n\n";
+                    modificarReserva(colaR, listaH);
+                    limpiarConsola();
+                    break;
+                case 5: // ELIMINAR RESERVA
+                    system("cls");
+                    mostrarReservas(colaR, false);
+                    cout << "\n\n";
+                    cancelarReserva(colaR, listaH);
+                    limpiarConsola();
+                    break;
+                case 6: // SALIR DEL PROGRAMA
+                    guardarDatos(listaC, listaH, colaR);
+                    exit(0);
+                }
+            }
+            else if (key == 27) break;
         }
     }
 
@@ -605,7 +649,7 @@ public:
         // Si el archivo de clientes no existe, se mostrara el menu de registro
         if (!clientesRegistrados) {
             while (true) {
-                menuRegistro();
+                Console::CursorVisible = false;
                 clientesRegistrados = manejarMenuRegistro(listaClientes, listaHabitaciones, colaReservas);
                 if (clientesRegistrados) break;
             }
@@ -621,9 +665,9 @@ public:
         }
 
         // Logica principal del programa
-        while (true) {
-            menuPrincipal();
-            manejarMenuPrincipal(listaClientes, listaHabitaciones, colaReservas);
+        while (true) { 
+            Console::CursorVisible = false;
+            manejarMenuPrincipal(listaClientes, listaHabitaciones, colaReservas); 
         }
     }
 };

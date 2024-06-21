@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <algorithm>
 using namespace std;
+using namespace System;
 
 auto generarIdReserva = []() {
     srand(time(nullptr));

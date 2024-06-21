@@ -115,7 +115,7 @@ void ColaReservas<T>::imprimirCola(uint pagina, bool paginacion) const {
     cout << "\nPágina " << pagina << " de " << totalPaginas << "\n";
 
     if (paginacion) {
-        cout << "Presione 'N' para la siguiente página, 'P' para la página anterior, 'M' para el menú principal.\n";
+        cout << "Presione 'N' para la siguiente pagina, 'P' para la pagina anterior, 'M' para el menu principal.\n";
 
         char tecla = _getch();
         if (tecla == 'N' || tecla == 'n') {
@@ -155,11 +155,12 @@ void ColaReservas<T>::eliminarReserva(int id) {
 
 template<class T>
 T ColaReservas<T>::buscarReserva(int id) {
-    Nodo<T>* temp = frente;
-    while (temp != NULL) {
-        if (temp->dato->getId() == id) {
-            return temp->dato;
+    Nodo<T>* actual = frente;
+    while (actual != nullptr) {
+        if (actual->dato->getId() == id) {
+            return actual->dato;
         }
-        temp = temp->siguiente;
+        actual = actual->siguiente;
     }
+    return nullptr;
 }
