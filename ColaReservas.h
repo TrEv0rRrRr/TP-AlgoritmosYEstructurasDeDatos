@@ -103,10 +103,10 @@ void ColaReservas<T>::imprimirCola(uint pagina, bool paginacion) const {
     uint indice = 0;
 
     cout << "Lista de Reservas:\n";
-    cout << "  ID\tNombre\tApellido    Num. Habitacion\tFecha de Entrada - Fecha de Salida\n";
+    cout << "  ID\tNombre\tApellido    Num. Habitacion\tPrecio\t     Fecha de Entrada - Fecha de Salida\n";
     while (actual != nullptr && indice < fin) {
         if (indice >= inicio) {
-            cout << actual->dato->getId() << "\t" << actual->dato->getNombreCliente() << "\t  " << actual->dato->getApellidoCliente() << "\t\t  " << actual->dato->getNumHabitacion() << "\t\t    " << actual->dato->getFechaInicio() << "  -  " << actual->dato->getFechaFin() << "\n\n";
+            cout << actual->dato->getId() << "\t" << actual->dato->getNombreCliente() << "\t  " << actual->dato->getApellidoCliente() << "\t\t  " << actual->dato->getNumHabitacion() << "\t\t $" << actual->dato->getPrecio() << "\t\t  " << actual->dato->getFechaInicio() << "  -  " << actual->dato->getFechaFin() << "\n\n";
         }
         actual = actual->siguiente;
         indice++;

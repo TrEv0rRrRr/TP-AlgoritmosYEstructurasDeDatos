@@ -5,10 +5,10 @@ class Reserva
 private:
     string nombreCliente, apellidoCliente;
     string fechaInicio, fechaFin;
-    int id, numHabitacion;
+    int id, numHabitacion, precio;
 
 public:
-    Reserva::Reserva(): nombreCliente(""), apellidoCliente(""), numHabitacion(0), fechaInicio(""), fechaFin(""), id(0) {}
+    Reserva::Reserva(): nombreCliente(""), apellidoCliente(""), numHabitacion(0), fechaInicio(""), fechaFin(""), id(0), precio(0) {}
 
     Reserva::~Reserva();
 
@@ -19,6 +19,7 @@ public:
     string getFechaFin() { return this->fechaFin; }
     int getNumHabitacion() { return this->numHabitacion; }
     int getId() { return this->id; }
+    int getPrecio() { return this->precio; }
 
     // Setters
     void setNombreCliente(string nombreCliente) { this->nombreCliente = nombreCliente; }
@@ -26,7 +27,7 @@ public:
     void setNumHabitacion(int numHabitacion) { this->numHabitacion = numHabitacion; }
     void setFechaInicio(string fechaInicio) { this->fechaInicio = fechaInicio; }
     void setFechaFin(string fechaFin) { this->fechaFin = fechaFin; }
-    void setId(int id) { this->id = id; }
+    void setId(int id) { this->id = id; } void setPrecio(int precio) { this->precio = precio; }
 };
 
 Reserva::~Reserva() {}

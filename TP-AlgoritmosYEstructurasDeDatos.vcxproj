@@ -116,6 +116,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Cliente.h" />
+    <ClInclude Include="Factura.h" />
     <ClInclude Include="Habitacion.h" />
     <ClInclude Include="Librerias.h" />
     <ClInclude Include="ListaClientes.h" />

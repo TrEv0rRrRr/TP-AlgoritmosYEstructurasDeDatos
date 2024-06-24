@@ -10,6 +10,8 @@
 #include <utility>
 #include <unordered_map>
 #include <algorithm>
+#include <ctime>
+#include <iomanip>
 using namespace std;
 using namespace System;
 
@@ -17,3 +19,8 @@ auto generarIdReserva = []() {
     srand(time(nullptr));
     return rand() % 900000 + 100000;
 };
+
+auto generarIdFactura = []() {
+    srand(time(nullptr));
+    return rand() % 9000000 + 1000000;
+    };

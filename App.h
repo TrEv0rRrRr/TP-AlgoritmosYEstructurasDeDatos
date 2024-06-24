@@ -5,6 +5,7 @@
 #include "ListaHabitaciones.h"
 #include "Reserva.h"
 #include "ColaReservas.h"
+#include "Factura.h"
 
 class App
 {
@@ -13,6 +14,7 @@ private:
     ListaHabitaciones<Habitacion*>* listaHabitaciones = new ListaHabitaciones<Habitacion*>();
     ColaReservas<Reserva*>* colaReservas = new ColaReservas<Reserva*>();
     bool habitacionesCargadas = false;
+    Factura* facturaPendiente = new Factura();
 
 public:
     App();
@@ -97,6 +99,7 @@ public:
                 archivo << habitacion->getNumPiso() << ","
                     << habitacion->getNumHab() << ","
                     << habitacion->getTipo() << ","
+                    << habitacion->getPrecio() << ","
                     << habitacion->getDisponibilidad() << endl;
             }
             archivo.close();
@@ -110,21 +113,24 @@ public:
                 string linea;
                 while (getline(archivo, linea)) {
                     stringstream ss(linea);
-                    string numHab, numPiso, tipo;
+                    string numHab, numPiso, tipo, precio;
                     int disponible;
                     getline(ss, numPiso, ',');
                     getline(ss, numHab, ',');
                     getline(ss, tipo, ',');
+                    getline(ss, precio, ',');
                     ss >> disponible;
 
                     int numPisoInt = stoi(numPiso);
                     int numHabInt = stoi(numHab);
+                    int precioInt = stoi(precio);
                     bool disponibilidad = (disponible == 1);
 
                     Habitacion* habitacion = new Habitacion();
                     habitacion->setNumPiso(numPisoInt);
                     habitacion->setNumHab(numHabInt);
                     habitacion->setTipo(tipo);
+                    habitacion->setPrecio(precioInt);
                     habitacion->setDisponibilidad(disponibilidad);
                     lista->agregarHabitacion(habitacion);
                 }
@@ -141,10 +147,10 @@ public:
         if (indice < lista->getLongitud()) {
             cout << "Lista de habitaciones:\n";
             cout << "I: Individual\tS: Suite:\tD: Doble\n\n";
-            cout << "Num. Piso\tNum. Habitacion\t\tTipo de habitacion\t\tDisponibilidad\n";
+            cout << "Num. Piso\tNum. Habitacion\t\tTipo de habitacion\t\tDisponibilidad\t\tPrecio\n";
             for (uint i = indice; i < lista->getLongitud() && i < indice + elementosPorPagina; ++i) {
                 Habitacion* habitacion = lista->obtenerPos(i);
-                cout << "    " << habitacion->getNumPiso() << "\t\t      " << habitacion->getNumHab() << "\t\t\t" << habitacion->getTipo() << "\t\t\t      " << (habitacion->getDisponibilidad() ? "Si" : "No") << "\n\n";
+                cout << "    " << habitacion->getNumPiso() << "\t\t      " << habitacion->getNumHab() << "\t\t\t" << habitacion->getTipo() << "\t\t\t      " << (habitacion->getDisponibilidad() ? "Si" : "No") << "\t\t $" << habitacion->getPrecio() << "\n\n";
             }
         }
 
@@ -170,9 +176,7 @@ public:
             cout << "No hay habitaciones.\n\n";
             resetConsoleColor();
         }
-        else {
-            imprimirHabitacionesPaginadas(lista, 0, 1, 10);
-        }
+        else imprimirHabitacionesPaginadas(lista, 0, 1, 10);
     }
 
     void crearHabitaciones(ListaHabitaciones<Habitacion*>* lista) {
@@ -190,6 +194,9 @@ public:
                 habitacion->setNumHab(numHab);
                 habitacion->setDisponibilidad(true);
                 habitacion->setTipo(tipos[rand() % (sizeof(tipos) / sizeof(tipos[0]))]);
+                if (habitacion->getTipo() == "I") habitacion->setPrecio(20);
+                else if (habitacion->getTipo() == "D") habitacion->setPrecio(50);
+                else habitacion->setPrecio(100);
                 lista->agregarHabitacion(habitacion);
             }
         }
@@ -236,7 +243,7 @@ public:
         if (archivo.is_open()) {
             for (uint i = 0; i < cola->obtenerLongitud(); ++i) {
                 Reserva* reserva = cola->obtenerPos(i);
-                archivo << reserva->getId() << "," << reserva->getNombreCliente() << "," << reserva->getApellidoCliente() << "," << reserva->getNumHabitacion() << "," << reserva->getFechaInicio() << "," << reserva->getFechaFin() << endl;
+                archivo << reserva->getId() << "," << reserva->getNombreCliente() << "," << reserva->getApellidoCliente() << "," << reserva->getNumHabitacion() << "," << reserva->getPrecio() << "," << reserva->getFechaInicio() << "," << reserva->getFechaFin() << endl;
             }
             archivo.close();
         }
@@ -248,17 +255,19 @@ public:
             string linea;
             while (getline(archivo, linea)) {
                 stringstream ss(linea);
-                string nombreCliente, apellidoCliente, fechaInicio, fechaFin, id, numHabitacion;
+                string nombreCliente, apellidoCliente, fechaInicio, fechaFin, id, numHabitacion, precio;
                 getline(ss, id, ',');
                 getline(ss, nombreCliente, ',');
                 getline(ss, apellidoCliente, ',');
                 getline(ss, numHabitacion, ',');
+                getline(ss, precio, ',');
                 getline(ss, fechaInicio, ',');
                 getline(ss, fechaFin, ',');
 
                 // Convertir cadenas numericas a enteros
                 int numHabInt = stoi(numHabitacion);
                 int idInt = stoi(id);
+                int precioInt = stoi(precio);
 
                 // Crear objeto Habitacion y agregarlo a la lista
                 Reserva* reserva = new Reserva();
@@ -266,6 +275,7 @@ public:
                 reserva->setNombreCliente(nombreCliente);
                 reserva->setApellidoCliente(apellidoCliente);
                 reserva->setNumHabitacion(numHabInt);
+                reserva->setPrecio(precioInt);
                 reserva->setFechaInicio(fechaInicio);
                 reserva->setFechaFin(fechaFin);
                 cola->encolar(reserva);
@@ -276,41 +286,56 @@ public:
 
     void reservarHabitacion(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones, string& nombreCliente, string& apellidoCliente) {
         string fInicio, fFinal;
-        int numH;
-        cout << "Ingrese el numero de habitacion que quiere reservar: ";
-        cin >> numH;
-
-        Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numH);
-        if (habitacion != nullptr) {
-            if (habitacion->getDisponibilidad()) {
-                cout << "Habitacion disponible para reservar." << endl;
-
-                cout << "Ingrese la fecha de inicio (dd/mm/aaaa): ";
-                cin.ignore();
-                getline(cin, fInicio);
-                cout << "Ingrese la fecha de salida (dd/mm/aaaa): ";
-                getline(cin, fFinal);
-
-                int idReserva = generarIdReserva();
-                cout << "ID generada: " << idReserva << endl;
-
-                Reserva* reserva = new Reserva();
-                reserva->setNombreCliente(nombreCliente);
-                reserva->setApellidoCliente(apellidoCliente);
-                reserva->setNumHabitacion(numH);
-                reserva->setFechaInicio(fInicio);
-                reserva->setFechaFin(fFinal);
-                reserva->setId(idReserva);
-
-                colaReservas->encolar(reserva);
-
-                habitacion->setDisponibilidad(false);
-
-                cout << "Reserva realizada con exito.\n\n";
-            }
-            else cout << "La habitacion no esta disponible para reservar.\n\n";
+        int numH, precio;
+        if (!facturaPendiente->getPagada()) {
+            cout << "No puede reservar otra habitacion hasta que pague la factura pendiente." << endl;
+            return;
         }
-        else cout << "La habitacion no se encontro.\n\n";
+        else {
+            cout << "Ingrese el numero de habitacion que quiere reservar: ";
+            cin >> numH;
+
+            Habitacion* habitacion = listaHabitaciones->buscarHabitacion(numH);
+            if (habitacion != nullptr) {
+                if (habitacion->getDisponibilidad()) {
+                    precio = habitacion->getPrecio();
+                    cout << "Habitacion disponible para reservar." << endl;
+
+                    cout << "Ingrese la fecha de inicio (dd/mm/aaaa): ";
+                    cin.ignore();
+                    getline(cin, fInicio);
+                    cout << "Ingrese la fecha de salida (dd/mm/aaaa): ";
+                    getline(cin, fFinal);
+
+                    int idReserva = generarIdReserva();
+                    cout << "ID generada: " << idReserva << endl;
+
+                    cout << "Costo de la reserva: $" << precio << endl;
+
+                    Reserva* reserva = new Reserva();
+                    reserva->setNombreCliente(nombreCliente);
+                    reserva->setApellidoCliente(apellidoCliente);
+                    reserva->setNumHabitacion(numH);
+                    reserva->setFechaInicio(fInicio);
+                    reserva->setFechaFin(fFinal);
+                    reserva->setId(idReserva);
+                    reserva->setPrecio(precio);
+
+                    colaReservas->encolar(reserva);
+
+                    habitacion->setDisponibilidad(false);
+
+                    facturaPendiente->setIdFactura(generarIdFactura());
+                    facturaPendiente->setNombreCliente(nombreCliente);
+                    facturaPendiente->setApellidoCliente(apellidoCliente);
+                    facturaPendiente->setTotal(precio);
+                    facturaPendiente->setPagada(false);
+                    cout << "Reserva realizada con exito.\n\n";
+                }
+                else cout << "La habitacion no esta disponible para reservar.\n\n";
+            }
+            else cout << "La habitacion no se encontro.\n\n";
+        }
     }
 
     void modificarReserva(ColaReservas<Reserva*>* colaReservas, ListaHabitaciones<Habitacion*>* listaHabitaciones) {
@@ -470,6 +495,25 @@ public:
         else cola->imprimirCola(1, paginacion);
     }
 
+    void manejarFacturacion() {
+        if (!facturaPendiente->getPagada()) {
+            cout << "Tienes una factura pendiente:" << endl;
+            facturaPendiente->mostrarFactura();
+
+            char opcion;
+            cout << "Desea pagar la factura ahora? (S/N): ";
+            cin >> opcion;
+
+            if (opcion == 'S' || opcion == 's') {
+                cout << "Procesando pago...\n";
+                facturaPendiente->setPagada(true);
+                cout << "Pago realizado con exito. La factura ha sido pagada.\n";
+            }
+            else cout << "No se ha realizado el pago. La factura sigue pendiente." << endl;
+        }
+        else cout << "No tienes facturas pendientes." << endl;
+    }
+
     // -------------- FUNCIONES PRINCIPALES --------------
 
     void cargarDatos(ListaClientes<Cliente*>* listaC, ListaHabitaciones<Habitacion*>* listaH, ColaReservas<Reserva*>* colaR) {
@@ -546,7 +590,9 @@ public:
         setConsoleColor(0, opcionSeleccionada == 5 ? 10 : 15);
         cout << "5. Cancelar una reserva" << endl;
         setConsoleColor(0, opcionSeleccionada == 6 ? 10 : 15);
-        cout << "6. Salir" << endl;
+        cout << "6. Facturacion" << endl;
+        setConsoleColor(0, opcionSeleccionada == 7 ? 10 : 15);
+        cout << "7. Salir" << endl;
         resetConsoleColor();
     }
 
@@ -568,7 +614,7 @@ public:
                     if (opcionSeleccionada > 1) opcionSeleccionada--;
                     break;
                 case 80:
-                    if (opcionSeleccionada < 6) opcionSeleccionada++;
+                    if (opcionSeleccionada < 7) opcionSeleccionada++;
                     break;
                 }
             }
@@ -604,7 +650,12 @@ public:
                     cancelarReserva(colaR, listaH);
                     limpiarConsola();
                     break;
-                case 6: // SALIR DEL PROGRAMA
+                case 6: // MOSTRAR FACTURA
+                    system("cls");
+                    manejarFacturacion();
+                    limpiarConsola();
+                    break;
+                case 7: // SALIR DEL PROGRAMA
                     guardarDatos(listaC, listaH, colaR);
                     exit(0);
                 }
@@ -637,6 +688,7 @@ public:
     void run() {
         cargarHabitaciones(listaHabitaciones, "habitaciones.txt");
         cargarReservas(colaReservas, "reservas.txt");
+
         // Verificar si el archivo de clientes existe y cargarlos si es asi
         bool clientesRegistrados = archivoExiste("clientes.txt");
 
